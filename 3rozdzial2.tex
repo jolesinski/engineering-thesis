@@ -1,0 +1,155 @@
+\chapter{Depth data acquisition techniques}
+\label{cha:acquisition}
+
+\begin{comment}
+[1] - Build Your Own 3D Scanner
+
+What is a depth map. Classification of aqcuisition methods - passive and active, number of vantage points. This chapter provides a brief description of the operating principle of some commonly used techniques with their advantages and disadvantages.
+\end{comment}
+
+
+%-------------------------------------------------------
+
+\section{Stereo vision}
+\label{sec:stereo}
+
+\begin{comment}
+[1] - State-Of-The-Art and Applications of 3D imaging sensors
+\end{comment}
+
+Passive method. Based on human vision - biological process of Stereopsis. Depth info acquired using two or more images concurrently captured from displaced cameras. Processing steps: image acquisition, camera modeling, feature extractions, correspondence analysis and triangulation. Simple, low-cost hardware, but processing computationally expensive. Features? Correspondences? Triangulation with picture.
+
+\begin{comment}
+WIKIPEDIA:
+
+Computer stereo vision is the extraction of 3D information from digital images, such as obtained by a CCD camera. By comparing information about a scene from two vantage points, 3D information can be extracted by examination of the relative positions of objects in the two panels. This is similar to the biological process Stereopsis.
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.7]{stereo}
+\caption{Stereo vision}
+\end{figure}
+
+In traditional stereo vision, two cameras, displaced horizontally from one another are used to obtain two differing views on a scene, in a manner similar to human binocular vision. By comparing these two images, the relative depth information can be obtained, in the form of disparities, which are inversely proportional to the differences in distance to the objects.
+
+To compare the images, the two views must be superimposed in a stereoscopic device, the image from the right camera being shown to the observer's right eye and from the left one to the left eye.
+
+In real camera systems however, several pre-processing steps are required.
+
+The image must first be removed of distortions, such as barrel distortion to ensure that the observed image is purely projectional.
+The image must be projected back to a common plane to allow comparison of the image pairs, known as image rectification.
+An information measure which compares the two images is minimized. This gives the best estimate of the position of features in the two images, and creates a disparity map.
+Optionally, the disparity as observed by the common projection, is converted back to the height map by inversion. Utilising the correct proportionality constant, the height map can be calibrated to provide exact distances.
+%---------------------------------------------------------------------------
+\end{comment}
+
+\section{Laser LIDAR}
+\label{sec:lidar}
+
+\begin{comment}
+WIKIPEDIA:
+
+
+Lidar (also written LIDAR or LiDAR) is a remote sensing technology that measures distance by illuminating a target with a laser and analyzing the reflected light. Although thought by some to be an acronym of Light Detection And Ranging, the term lidar was actually created as a portmanteau of "light" and "radar."
+
+Lidar is popularly used as a technology to make high-resolution maps, with applications in geomatics, archaeology, geography, geology, geomorphology, seismology, forestry, remote sensing, atmospheric physics, airborne laser swath mapping (ALSM), laser altimetry, and contour mapping.
+
+Lidar uses ultraviolet, visible, or near infrared light to image objects. It can target a wide range of materials, including non-metallic objects, rocks, rain, chemical compounds, aerosols, clouds and even single molecules.[4] A narrow laser-beam can map physical features with very high resolution[vague].
+
+Lidar has been used extensively for atmospheric research and meteorology. Lidar instruments fitted to aircraft and satellites carry out surveying and mapping – a recent example being the U.S. Geological Survey Experimental Advanced Airborne Research Lidar.[12] NASA has identified lidar as a key technology for enabling autonomous precision safe landing of future robotic and crewed lunar-landing vehicles.[13]
+
+Wavelengths vary to suit the target: from about 10 micrometers to the UV (approximately 250 nm). Typically light is reflected via backscattering. Different types of scattering are used for different lidar applications: most commonly Rayleigh scattering, Mie scattering, Raman scattering, and fluorescence. Based on different kinds of backscattering, the lidar can be accordingly called Rayleigh Lidar, Mie Lidar, Raman Lidar, Na/Fe/K Fluorescence Lidar, and so on.[4] Suitable combinations of wavelengths can allow for remote mapping of atmospheric contents by identifying wavelength-dependent changes in the intensity of the returned signal.
+
+\end{comment}
+%---------------------------------------------------------------------------
+
+\section{Time-of-flight}
+\label{sec:tof}
+
+\begin{comment}
+WIKIPEDIA:
+
+
+A time-of-flight camera (ToF camera) is a range imaging camera system that resolves distance based on the known speed of light, measuring the time-of-flight of a light signal between the camera and the subject for each point of the image. The time-of-flight camera is a class of scannerless LIDAR, in which the entire scene is captured with each laser or light pulse, as opposed to point-by-point with a laser beam such as in scanning LIDAR systems.[1]
+
+The simplest version of a time-of-flight camera uses light pulses or a single light pulse. The illumination is switched on for a very short time, the resulting light pulse illuminates the scene and is reflected by the objects in the field of view. The camera lens gathers the reflected light and images it onto the sensor or focal plane array. Depending upon the distance, the incoming light experiences a delay. As light has a speed of approximately c = 300,000,000 meters per second, this delay is very short: an object 2.5 m away will delay the light by 16 ns.
+
+The single pixel consists of a photo sensitive element (e.g. a photo diode). It converts the incoming light into a current. In analog timing imagers, connected to the photo diode are fast switches, which direct the current to one of two (or several) memory elements (e.g. a capacitor) that act as summation elements. In digital timing imagers, a time counter, that can be running at several gigahertz, is connected to each photodetector pixel and stops counting when light is sensed.
+
+Advantages:
+
+Simplicity
+In contrast to stereo vision or triangulation systems, the whole system is very compact: the illumination is placed just next to the lens, whereas the other systems need a certain minimum base line. In contrast to laser scanning systems, no mechanical moving parts are needed.
+
+Efficient distance algorithm
+It is a direct process to extract the distance information out of the output signals of the TOF sensor. As a result, this task uses only a small amount of processing power, again in contrast to stereo vision, where complex correlation algorithms are implemented. After the distance data has been extracted, object detection, for example, is also a straightforward process to carry out because the algorithms are not disturbed by patterns on the object.
+
+Speed
+Time-of-flight cameras are able to measure the distances within a complete scene with a singleshot. As the cameras reach up to 160 frames per second, they are ideally suited to be used in real-time applications.
+
+Disadvantages:
+
+Background light
+When using CMOS or other integrating detectors or sensors that use visible or near visible light (400 nm - 700 nm), although most of the background light coming from artificial lighting or the sun is suppressed, the pixel still has to provide a high dynamic range. The background light also generates electrons, which have to be stored. For example, the illumination units in many of today's TOF cameras can provide an illumination level of about 1 watt. The Sun has an illumination power of about 50 watts per square meter after the optical band-pass filter. Therefore, if the illuminated scene has a size of 1 square meter, the light from the sun is 50 times stronger than the modulated signal. For non-integrating TOF sensors that do not integrate light over time and are using near-infrared detectors (InGaAs) to capture the short laser pulse, direct viewing of the sun is a non-issue because the image is not integrated over time, rather captured within a short acquisition cycle typically less than 1 microsecond. Such TOF sensors are used in space applications[19] and in consideration for automotive applications.[24]
+
+Interference
+In certain types of TOF devices, if several time-of-flight cameras are running at the same time, the TOF cameras may disturb each other's measurements. To be clear, this is not true of all TOF sensors. There exist several possibilities for dealing with this problem:
+
+Time multiplexing: A control system starts the measurement of the individual cameras consecutively, so that only one illumination unit is active at a time.
+Different modulation frequencies: If the cameras modulate their light with different modulation frequencies, their light is collected in the other systems only as background illumination but does not disturb the distance measurement.
+For Direct TOF type cameras that use a single laser pulse for illumination, because the single laser pulse is short (e.g. 10 nano-seconds), the round trip TOF to and from the objects in the field of view is correspondingly short (e.g. 100 meters = 660nS TOF round trip), for an imager capturing at 30 Hz, the probability of an interfering interaction is the time that the camera acquisition gate is open divided by the time between laser pulses or approximately 1 in 50,000 (0.66uS divided by 33mS).
+
+Multiple reflections
+In contrast to laser scanning systems where a single point is illuminated, the time-of-flight cameras illuminate a whole scene. For a phase difference device (amplitude modulated array), due to multiple reflections, the light may reach the objects along several paths. Therefore, the measured distance may be greater than the true distance. Direct TOF imagers are vulnerable if the light is reflecting from a specular surface. There are published papers available that outline the strengths and weaknesses of the various TOF devices and approaches.
+
+\end{comment}
+
+%---------------------------------------------------------------------------
+
+\section{Structured light}
+\label{sec:actuators}
+
+\begin{comment}
+WIKIPEDIA:
+
+
+Projecting a narrow band of light onto a three-dimensionally shaped surface produces a line of illumination that appears distorted from other perspectives than that of the projector, and can be used for an exact geometric reconstruction of the surface shape (light section).
+
+A faster and more versatile method is the projection of patterns consisting of many stripes at once, or of arbitrary fringes, as this allows for the acquisition of a multitude of samples simultaneously. Seen from different viewpoints, the pattern appears geometrically distorted due to the surface shape of the object.
+
+Although many other variants of structured light projection are possible, patterns of parallel stripes are widely used. The picture shows the geometrical deformation of a single stripe projected onto a simple 3D surface. The displacement of the stripes allows for an exact retrieval of the 3D coordinates of any details on the object's surface.
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.5]{structure}
+\caption{Stereo vision}
+\end{figure}
+
+Two major methods of stripe pattern generation have been established: Laser interference and projection.
+
+The laser interference method works with two wide planar laser beam fronts. Their interference results in regular, equidistant line patterns. Different pattern sizes can be obtained by changing the angle between these beams. The method allows for the exact and easy generation of very fine patterns with unlimited depth of field. Disadvantages are high cost of implementation, difficulties providing the ideal beam geometry, and laser typical effects like speckle noise and the possible self interference with beam parts reflected from objects. Typically, there is no means of modulating individual stripes, such as with Gray codes.
+
+The projection method uses non coherent light and basically works like a video projector. Patterns are generated by a display within the projector, typically a liquid crystal display (LCD) or liquid crystal on silicon (LCOS) display.
+
+A proprietary projection method uses digital light processing (DLP; moving micro mirror) displays. DLP displays do not absorb light significantly and therefore allow very high light intensities. They also have an extremely linear gray value reproduction, as they are steered by pulse length modulation.
+
+Principally, stripes generated by display projectors have small discontinuities due to the pixel boundaries in the displays. Sufficiently small boundaries however can practically be neglected as they are evened out by the slightest defocus.
+
+A typical measuring assembly consists of one stripe projector and at least one camera. For many applications, two cameras on opposite sides of the projector have been established as useful.
+
+Invisible (or imperceptible) structured light uses structured light without interfering with other computer vision tasks for which the projected pattern will be confusing. Example methods include the use of infrared light or of extremely high framerates alternating between two exact opposite patterns.[2]
+
+There are several depth cues contained in the observed stripe patterns. The displacement of any single stripe can directly be converted into 3D coordinates. For this purpose, the individual stripe has to be identified, which can for example be accomplished by tracing or counting stripes (pattern recognition method). Another common method projects alternating stripe patterns, resulting in binary Gray code sequences identifying the number of each individual stripe hitting the object. An important depth cue also results from the varying stripe widths along the object surface. Stripe width is a function of the steepness of a surface part, i.e. the first derivative of the elevation. Stripe frequency and phase deliver similar cues and can be analyzed by a Fourier transform. Finally, the wavelet transform has recently been discussed for the same purpose.
+
+In many practical implementations, series of measurements combining pattern recognition, Gray codes and Fourier transform are obtained for a complete and unambiguous reconstruction of shapes.
+
+Another method also belonging to the area of fringe projection has been demonstrated, utilizing the depth of field of the camera.[3]
+
+It is also possible to use projected patterns primarily as a means of structure insertion into scenes, for an essentially photogrammetric acquisition.
+
+
+\end{comment}
+
+
+

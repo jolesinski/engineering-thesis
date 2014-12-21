@@ -1,0 +1,121 @@
+
+\documentclass[en,11pt]{aghdpl}  % praca w języku angielskim
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+
+% dodatkowe pakiety
+\usepackage{enumerate}
+\usepackage{listings}
+\usepackage{verbatim}
+\usepackage{float}
+\lstloadlanguages{TeX}
+
+\lstset{
+  literate={ą}{{\k{a}}}1
+           {ć}{{\'c}}1
+           {ę}{{\k{e}}}1
+           {ó}{{\'o}}1
+           {ń}{{\'n}}1
+           {ł}{{\l{}}}1
+           {ś}{{\'s}}1
+           {ź}{{\'z}}1
+           {ż}{{\.z}}1
+           {Ą}{{\k{A}}}1
+           {Ć}{{\'C}}1
+           {Ę}{{\k{E}}}1
+           {Ó}{{\'O}}1
+           {Ń}{{\'N}}1
+           {Ł}{{\L{}}}1
+           {Ś}{{\'S}}1
+           {Ź}{{\'Z}}1
+           {Ż}{{\.Z}}1
+}
+
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes,positioning,shadows,trees}
+
+
+%---------------------------------------------------------------------------
+
+\author{Jakub Olesiński}
+\shortauthor{J. Olesiński}
+
+\titlePL{Projekt i wykonanie systemu akwizycji i analizy danych dla mobilnej platformy z zespołem dwóch manipulatorów}
+
+\titleEN{Design and development of the system for data acquisition and analysis for the mobile platform with a set of two manipulators.}
+
+
+\shorttitlePL{Design and development of the system for data acquisition and analysis for the mobile platform with a set of two manipulators.} % skrócona wersja tytułu jeśli jest bardzo długi
+\shorttitleEN{Design and development of the system for data acquisition and analysis for the mobile platform with a set of two manipulators.}
+
+%\thesistype{Praca dyplomowa magisterska}
+\thesistype{Master of Engineering Thesis}
+
+\supervisor{dr inż. Paweł Rotter}
+%\supervisor{Marcin Szpyrka PhD, DSc}
+
+%\degreeprogramme{Automatyka i Robotyka}
+\degreeprogramme{Automatics and Robotics}
+
+\date{2013}
+
+%\department{Katedra Automatyki i Inżynierii Biomedycznej}
+\department{Department of Automatics and Bioengineering}
+
+%\faculty{Wydział Elektrotechniki, Automatyki,\protect\\[-1mm] Informatyki i Inżynierii Biomedycznej}
+\faculty{Faculty of Electrical Engineering, Automatics, Computer Science and Biomedical Engineering}
+
+\acknowledgements{Serdecznie dziękuję \dots tu ciąg dalszych podziękowań np. dla promotora, żony, sąsiada itp.}
+
+
+\setlength{\cftsecnumwidth}{10mm}
+
+%---------------------------------------------------------------------------
+\setcounter{secnumdepth}{4}
+
+\begin{document}
+
+\titlepages
+\setcounter{tocdepth}{3}
+\tableofcontents
+\clearpage
+
+\include{1intro}
+\include{2rozdzial1}
+\include{3rozdzial2}
+\include{4rozdzial3}
+\include{5rozdzial4}
+\include{6summary}
+
+
+
+% itd.
+% \appendix
+% \include{dodatekA}
+% \include{dodatekB}
+% itd.
+
+\bibliographystyle{alpha}
+\bibliography{bibliografia}
+%\begin{thebibliography}{1}
+%
+%\bibitem{Dil00}
+%A.~Diller.
+%\newblock {\em LaTeX wiersz po wierszu}.
+%\newblock Wydawnictwo Helion, Gliwice, 2000.
+%
+%\bibitem{Lam92}
+%L.~Lamport.
+%\newblock {\em LaTeX system przygotowywania dokumentów}.
+%\newblock Wydawnictwo Ariel, Krakow, 1992.
+%
+%\bibitem{Alvis2011}
+%M.~Szpyrka.
+%\newblock {\em {On Line Alvis Manual}}.
+%\newblock AGH University of Science and Technology, 2011.cccccc
+%\newblock \\\texttt{http://fm.ia.agh.edu.pl/alvis:manual}.
+%
+%\end{thebibliography}
+
+\end{document}

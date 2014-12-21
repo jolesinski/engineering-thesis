@@ -1,0 +1,197 @@
+\chapter{Mobile manipulation system design}
+\label{cha:mmsdesign}
+
+%---------------------------------------------------------------------------
+
+\section{Project background}
+\label{sec:background}
+
+A mobile manipulation system (MMS) is a robotic system that is capable of both manipulating objects and locomotion. Typically, the system is composed of a robotic arm based on a robotic mobile platform. Such configuration enables the manipulator to operate in an unlimited workspace, thus providing great application opportunities.
+
+Typically, mobile manipulators are designed to relieve people in hostile situations. They are, for example, widely used in the field of chemical, biological, radioactive or nuclear (CBRN) defense. Explosive materials and other hazardous substances can be disposed without exposing operators to any danger. Another example is space exploration, where manipulation systems are used in planetary rovers in unmanned exploratory missions on other planets. Substitution of human operators in such expeditions significantly reduce their expenditure and risk.
+
+Augmenting the MMS design with a certain degree of autonomy, brings the possibility for the robot to be used as a human-assistant in the household. Most of current applications in this field refer to pick up and delivery services, that have the potential to improve lives of the elderly, injured and disabled people []. Furthermore, typical service robots in human environments are dedicated to accomplish only a single task, such as vacuum cleaning, lawn mowing, pool cleaning, window washing. Their operation is achieved by adjusting existing domestic appliances with a degree of autonomy. With a multi purpose robotic system such as a mobile manipulator, it is potentially possible not to replace existing devices but to replace the human operator. Autonomous gripping and transportation could also be used in the industry for designing flexible factory plants and intelligent warehouses, as discussed in []. 
+
+One of the most promising applications is the PR2 robot from the Willow Garage company. The PR2 robot has already proven successful in such dexterous experiments as opening doors, folding towels and serving beverages to people. 
+
+In MMS robots, the unstructured environment and additional degrees of freedom complicate the control task. Furthermore, the workspace of a manipulator is often shared with people and other vehicles. Such work environment renders many potentially hazardous situations. Therefore, it requires a highly sophisticated control system, with vision based feedback. 
+
+%---------------------------------------------------------------------------
+
+\section{Design requirements}
+\label{sec:require}
+
+Design requirements:
+\begin{enumerate}
+\item The robotic system should consist of two cooperating serial manipulators, based on a wheeled robotic platform.
+\item The whole construction should be made of easily accessible components, preferably available on the consumer market, as it would ease the maintenance of the equipment in the future.
+\item Both serial manipulators should be equiped with grippers for general object manipulation.
+\item Their reachable workspace should allow to reach objects located on the ground.
+\item The workspace of each manipulator should also intersect, to allow collaboration on manipulation tasks.
+\item The steering mechanisms of the MMS chassis should be kept simple and convenient to control.
+\item The platform is expected to move only on flat surfaces at indoor areas.
+\item The MMS robot should possess a control server, that is expected to provide a web interface, developed in a commonly used and well supported standard.
+\item That interface is required to provide methods for setting positions on manipulator joints, for setting speed of achieving those positions, and for setting velocity and direction of platform movement. 
+\item Processing power of the computing unit should be sufficient to analyse camera images in an online fashion. 
+\item The whole system should be powered by a source that could withstand at least an hour of continuous work.
+\end{enumerate}
+
+\begin{comment}
+In robotics a serial manipulator is a device used to manipulate objects. It consists of a kinematic chain with actuated joints. The type of the joint can be prismatic or revolute, correspondingly allowing for either rotational or transational motion. The last link of the chain is called an end-effector, which is used to interact with the environment.
+ 
+ 
+ Robotic arm reachable workspace is defined as a set of points at which end-effector can be located. Manipulators are usually classified by their structural configuration, that is, the type of first three joints in the kinematic chain. We distignuish four basic types of such configuration: 
+
+\begin{enumerate}
+\item Cartesian - three prismatic joints \textcolor{red}{pros/cons}
+\item Cylindrical - two prismatic and one revolute joints \textcolor{red}{pros/cons}
+\item Spherical - one prismatic and two revolute joints  \textcolor{red}{pros/cons}
+\item Articulated - three revolute joints  \textcolor{red}{often called antromorphic, since it mimics human arm structure. It provides relatively large workspace and is convinient for obstacle avoidance, although it is the most difficult in positioning. }
+\end{enumerate}
+
+ For every manipulator, the position and orientation of its end-effector can be derived from its joint positions and its geometric model. The inverse problem however, is more difficult and does not always have a solution. In 1968 Donald L. Peiper showed that \textit{the inverse kinematics of serial manipulators with six revolute joints, and with three consecutive joints intersecting, can be solved in closed-form, i.e. analytically}. This result is referred to as \textcolor{red}{321 kinematic structure []}, since the three wrist joints intersect, the two shoulder and elbow joints are parallel, and the first joint orthogonally intersects the first shoulder joint. The 321 design is an example of a 6R wrist-partitioned manipulator, which is one the most widely used type of manipulator in the industry.
+ 
+ Modern industrial robotic arms are characterized with high precision and repeatability. They usually work in a fixed workspace, on factory plants, where they relieve humans from repeatable, dull and often dangerous tasks.\textcolor{red}{ On the other hand, limited workspace of a manipulator imposes high costs of any changes in the manufacturing process. Inflexibility of the plant to different products [].}
+
+
+Generally speaking, a mobile robotic platform is an automatic machine that is capable of locomotion. Movement of a robot can be achieved in various ways, such as walking, rolling, hopping, metachronal motion etc. In general, wheeled robots consume less energy than other locomotion mechanisms. [1] The most crucial aspect of design in such robots is the type of used wheel. Standard wheels, although simple in structure and good in reliability, impose nonholonomic velocity constraints that limit robot motion. On the other hand, there are special wheel designs, with which a robot can obtain omnidirectional motion, removing those constraints. Mecanum wheels are an example of such wheels. They were invented in 1973 by Bengt Ilon, an engineer in Swedish company Mecanum AB [2]. In principle, they are composed of a central wheel with a set of rollers attached on its periphery at a certain angle. Depending on each individual wheels direction and speed, the total force vector can be achieved in any desired direction, ensuring three degrees of freedom for planar motion of the whole platform. [3]
+
+
+A mobile manipulator is a robotic system composed of a mobile platform and a robotic arm. Combining locomotion with manipulation enables the manipulator to operate in unlimited workspace, which makes it more flexible and provides great application possibilities. On the other hand, such design considerably complicates the control task. Due to additional degrees of freedom and unstructured environment, additional systems need to be introduced. A robot of that kind requires simultaneous navigation, path planning, object recognition and manipulation. Workspace of a mobile manipulator is usually shared with people and other vehicles, which render many potentially hazardous situations and impose entirely new and high demands on the security system. Addressing those problems have already been widely discussed in the literature, for example in [8][9][10].
+
+Mobile manipulation requires a data acquisition system with a variety of sensors to collect information about the environment and accomplish its tasks. Navigational information for dead reckoning task is usually gathered by odometry sensors, inertial units, and sometimes by RF position-location systems. Typically, tactile bumpers and ultrasonic or infrared proximity sensors provide necessary data to solve collision avoidance problems. Stereo-cameras, time-of-flight cameras, laser LIDARs and RGB-D sensors are generally utilised in vision systems resolving tasks such as object recognition and pose estimation. A vision system that provides depth information can also serve as a collision avoidance system or may navigate the robot.
+
+%---------
+
+The MPTM robot consists of two robotic arms based on a simple four-wheeled mobile platform. Both of robotic arms have 5 degrees of freedom and are in articulated structural configuration. To avoid complicating the mechanical design of the chassis with a steering mechanism, a special kind of wheels were used. Mecanum wheels, as they are called, are equipped with a set of rollers attached to their circumference, which allow a vehicle to move in any direction without turning the wheels. 
+
+By alternating wheels with left and right-handed rollers, in such a way that each wheel applies force roughly at right angles to the wheelbase diagonal the wheel is on, the vehicle is stable and can be made to move in any direction and turn by varying the speed and direction of rotation of each wheel. Moving all four wheels in the same direction causes forward or backward movement, running the wheels on one side in the opposite direction to those on the other side causes rotation of the vehicle, and running the wheels on one diagonal in the opposite direction to those on the other diagonal causes sideways movement. Combinations of these wheel motions allow for vehicle motion in any direction with any vehicle rotation.
+
+Another advantage of such design is increased stability of the platform.
+
+The MPTM robot utilises two types of actuators, 4 DC motors for the mobile platform wheels and 12 servomechanisms for manipulator joints. 
+All DC motors have 50:1 metal gearboxes. They achieve 200 RPM of no-load speed and 12 kg cm of stall current. Additionally, they possess 64 CPR encoders, which multiplied by the gear ratio provide 3200 counts per revolution.
+
+Servomechanisms used are Turnigy 1269HV, with operating speed of 
+
+Actuators are driven by PWM signal generated by MSP430G2553 microcontrollers, one for each of manipulators and one for the mobile platform.
+
+%---------------------------------------------------------------------------
+
+Mobile manipulators have been widely used in research and non-industrial applications, such as human assistance, planetary exploration or CBRN defense. 
+
+Typical service robots in human environments are specially designed to accomplish only a single task, such as vacuum cleaning, lawn mowing, pool cleaning, window washing etc. Their operation is achieved by adjusting existing domestic apliances with a degree of autonomy. With a multi purpose robotic system such as a mobile manipulator, it is potentially possible not to replace existing devices but to replace the operator. Most of the actual applications refer to pick up and delivery services, which have the potential to improve the lives of elderly, injured and disabled, as discussed in []. One of the most successful applications is the PR2 robot from Willow Garage company. The PR2 is being programmed to do increasingly technical and dexterous applications including opening doors and folding towels. [][]
+
+More often, mobile manipulators are designed to relieve people in hostile situations. They are, for example, widely used in the field of chemical, biological, radioactive or nuclear (CBRN) defense. Bombs and other hazardous substances can be disposed without exposing operators to any danger. Another example is space exploration, where manipulation systems are used in planetary rovers in unmanned exploratory missions on other planets. Substitution of human operators in such expeditions significantly reduce their expenditure and risk. In both situations, used robotic systems have to be characterized by high reliability and must be prepared to withstand unknown surface. While CBRN defense robots are usually radio controlled due to the highly complicated manipulation tasks, planetary rovers lack that privilige. Long delays. Recent Curiosity rover was capable of ...
+
+Exploration - the other hand, high demands, reasons, recent Curiosity
+
+CBRN defense, widely used, reasons, demands, example
+
+Industry - conservative, environment can be known, all required technology exists, flexible factories.
+
+\end{comment}
+
+
+%---------------------------------------------------------------------------
+
+\section{Hardware components}
+\label{sec:hard}
+
+Mechanical structure:
+
+\begin{figure}[H]
+\centering
+\includegraphics[trim=21cm 5cm 18cm 5cm, clip=true, totalheight=0.5\textheight]{model}
+\caption{Model}
+\end{figure}
+
+The MPTM robot consists of two robotic arms based on a simple four-wheeled mobile platform. Both of robotic arms have 5 degrees of freedom and are in articulated structural configuration. To avoid complicating the mechanical design of the chassis with a steering mechanism, a special kind of wheels were used. Mecanum wheels, as they are called, are equipped with a set of rollers attached to their circumference, which allow a vehicle to move in any direction without turning the wheels. 
+
+By alternating wheels with left and right-handed rollers, in such a way that each wheel applies force roughly at right angles to the wheelbase diagonal the wheel is on, the vehicle is stable and can be made to move in any direction and turn by varying the speed and direction of rotation of each wheel. Moving all four wheels in the same direction causes forward or backward movement, running the wheels on one side in the opposite direction to those on the other side causes rotation of the vehicle, and running the wheels on one diagonal in the opposite direction to those on the other diagonal causes sideways movement. Combinations of these wheel motions allow for vehicle motion in any direction with any vehicle rotation.
+
+Another advantage of such design is increased stability of the platform.
+
+Basic components:
+
+\tikzset{
+  basic/.style  = {draw, drop shadow, font=\sffamily, font=\footnotesize, rectangle,text centered, minimum size=2.2cm,minimum height=0.5cm},
+  root/.style   = {basic, thin, align=center, fill=blue!25},
+  level 2/.style = {basic, thin,align=center, fill=blue!30},
+  level 3/.style = {basic, thin, align=center, fill=blue!35}
+}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  level 1/.style={sibling distance=30mm},
+  edge from parent/.style={->,draw},
+  >=latex]
+
+% root of the the initial tree, level 1
+\node[root] {Hardware\\Components}
+% The first level, as children of the initial tree
+  child {node[level 2] (c1) {Mobile platform}}
+  child {node[level 2] (c2) {Two robotic arms}}
+  child {node[level 2] (c3) {CPU}}
+  child {node[level 2] (c4) {Power}}
+  child {node[level 2] (c5) {Peripherals}};
+
+% The second level, relatively positioned nodes
+\begin{scope}[every node/.style={level 3}]
+\node [below of = c1, xshift=15pt] (c11) {DC Motors\\ Pololu 50:1 6V};
+\node [below of = c11] (c12) {Mecanum wheels};
+\node [below of = c12] (c13) {Motor controller\\ Rover V};
+
+\node [below of = c2, xshift=15pt] (c21) {Servomotors \\ Turnigy 1269HV};
+\node [below of = c21] (c22) {End-effectors};
+\node [below of = c22] (c23) {Servo controller\\ PCA9685};
+
+\node [below of = c3, xshift=15pt] (c31) {Raspberry Pi};
+\node [below of = c31] (c32) {NVidia Jetson};
+
+
+\node [below of = c4, xshift=15pt] (c41) {Li-Poly battery \\ 8S 5.8Ah};
+\node [below of = c41] (c42) {DC-DC converter};
+
+
+\node [below of = c5, xshift=15pt] (c51) {Asus Xtion sensor};
+\end{scope}
+
+% lines from each level 1 node to every one of its "children"
+\foreach \value in {1,2,3}
+  \draw[->] (c1.195) |- (c1\value.west);
+
+\foreach \value in {1,...,3}
+  \draw[->] (c2.195) |- (c2\value.west);
+
+\foreach \value in {1,...,2}
+  \draw[->] (c3.195) |- (c3\value.west);
+  
+\foreach \value in {1,...,2}
+  \draw[->] (c4.195) |- (c4\value.west);
+  
+\foreach \value in {1,...,1}
+  \draw[->] (c5.195) |- (c5\value.west);
+\end{tikzpicture}
+
+\caption{Components}
+\end{figure}
+
+The MPTM robot utilises two types of actuators, 4 DC motors for the mobile platform wheels and 12 servomechanisms for manipulator joints. 
+All DC motors have 50:1 metal gearboxes. They achieve 200 RPM of no-load speed and 12 kg cm of stall current. Additionally, they possess 64 CPR encoders, which multiplied by the gear ratio provide 3200 counts per revolution.
+
+Servomechanisms used are Turnigy 1269HV, with operating speed of 
+
+Actuators are driven by PWM signal generated by MSP430G2553 microcontrollers, one for each of manipulators and one for the mobile platform.
+
+End effect:
+\begin{figure}[H]
+\centering
+\includegraphics[trim=15cm 18cm 28cm 10cm, clip=true, totalheight=0.4\textheight]{robot}
+\caption{Construction}
+\end{figure}
+%---------------------------------------------------------------------------
+
+\section{Software architecture}
+\label{sec:soft}
+
