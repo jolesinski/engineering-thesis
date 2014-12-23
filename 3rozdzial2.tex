@@ -21,9 +21,28 @@ Methods of 3D data aqcuisition are classified by the light source they utilize t
 
 \begin{comment}
 [1] - State-Of-The-Art and Applications of 3D imaging sensors
-\end{comment}
+Pic: http://zone.ni.com/reference/en-XX/help/372916M-01/nivisionconceptsdita/guid-cb42607e-f256-40f5-ab6e-28ec3a33bcda/
 
 Passive method. Based on human vision - biological process of Stereopsis. Depth info acquired using two or more images concurrently captured from displaced cameras. Processing steps: image acquisition, camera modeling, feature extractions, correspondence analysis and triangulation. Simple, low-cost hardware, but processing computationally expensive. Features? Correspondences? Triangulation with picture.
+
+\end{comment}
+
+Stereo vision is a passive depth acquisition technique, widely used in research and  industry. Its principle of operation is based on human vision system and the biological process of stereopsis, where the disparity between two different projections of the world on the human retinas leads to the depth sensation. Analogically, in computer stereo vision technique, two (or more) displaced in space cameras concurrently acquire the scene view. From the captured images disparity, a scene depth information is then inferred. A typical scheme for stereo vision depth calculation after image acquisition is divided into two steps: the correspondence problem and triangulation.
+
+\begin{figure}[H]
+\label{fig:stereo}
+\centering
+\includegraphics[width=0.7\textwidth]{fig/stereovision}
+\caption{Typical Stereo Vision System}
+\end{figure}
+
+Correspondence problem is the most difficult part of the stereo vision. It can be stated as follows: given two displaced 2D images of the same scene, find points representing the same space location in those images. There are many point matching algorithms discussed in the literature. Some of them rely on computing point features based on point neighbourhoods, others compute statistical descriptors of characteristic areas in the image, and then minimise measured difference between analysed regions to find the best matches. The correspondence problem in computer vision is a wide and open research area, that is beyond the scope of this work. For a thorough solution of the problem, the Reader can refer for example to [1].
+
+After obtaining the corresponding points, the point depth information can be derived by the means of triangulation (picture 1). if the imaging properties of the camera are known, two three-dimensional lines, from the camera's projection centres to the examined point can be drawn. The intersection of those lines is then used to infer the depth of the point. 
+
+The main advantage of the stereo vision system is that it can be built with easily accessible, standard 2D cameras. Such cameras allow to reduce the expenditure and provide relatively high resolution. On the other hand, the stereo vision systems have many drawbacks. Firstly, their performance is reduced in environments with low ambient light intensity, which makes the system impractical in some settings. Secondly, solving the correspondence problem is computationally expensive and often limit the depth acquisition frame rate. \begin{Huge} Finally...
+\end{Huge} 
+
 
 \begin{comment}
 WIKIPEDIA:
@@ -49,10 +68,11 @@ Optionally, the disparity as observed by the common projection, is converted bac
 %---------------------------------------------------------------------------
 \end{comment}
 
-\section{Laser LIDAR}
-\label{sec:lidar}
 
 \begin{comment}
+%\section{Laser LIDAR}
+%\label{sec:lidar}
+
 WIKIPEDIA:
 
 
@@ -71,6 +91,26 @@ Wavelengths vary to suit the target: from about 10 micrometers to the UV (approx
 
 \section{Time-of-flight}
 \label{sec:tof}
+
+\begin{comment}
+http://www.ti.com/lit/wp/sloa190b/sloa190b.pdf
+\end{comment}
+
+Time of flight (ToF) cameras work on a completely different principle than stereoscopic systems. ToF systems are characterised with active illumination and are composed of an near infra-red (IR) emmiter and IR camera. They work by illuminating the scene with a modulated IR beam and recording the received light, as presented in the figure 5. The distance from the recorded object is then calculated by measuring the phase shift between the illuminated and reflected signals. 
+
+ToF cameras, due to their specific architecture, are prone to errors caused by radiometric, geometric and illumination variations. The power of the emitted IR signal limits their measurement accuracy. The light entering to the sensor has an ambient and reflected components, thus high ambient light intensity reduces the signal to noise ratio. Moreover, the material and color of the object surface cause variations in the amplitude of the reflected IR signal.
+
+\begin{figure}[H]
+\label{fig:tof}
+\centering
+\includegraphics[width=0.7\textwidth]{fig/tofprinciple}
+\caption{ToF principle}
+\end{figure}
+
+Rewrite this. The simplest version of a time-of-flight camera uses light pulses or a single light pulse. The illumination is switched on for a very short time, the resulting light pulse illuminates the scene and is reflected by the objects in the field of view. The camera lens gathers the reflected light and images it onto the sensor or focal plane array. Depending upon the distance, the incoming light experiences a delay. As light has a speed of approximately c = 300,000,000 meters per second, this delay is very short: an object 2.5 m away will delay the light by 16 ns.
+
+Despite problems arising from ToF principle of operation, modern ToF cameras are distinguished by relatively low latency and fast scanning speed. The depth measurements are acquired directly from the hardware, so the speed is not limited by software. Unfortunately, most of the products available on the end-user market provide relatively low depth image resolution, typically QQVGA (160x120) and the pricing rises dramatically with the resolution.
+
 
 \begin{comment}
 WIKIPEDIA:
@@ -115,6 +155,21 @@ In contrast to laser scanning systems where a single point is illuminated, the t
 \section{Structured light}
 \label{sec:actuators}
 
+The structured light (SL) depth measurement technique combines some of the features of both time of flight and stereo vision principles.  Similarly to ToF cameras, SL relies on active illumination, work in the near infra-red and is composed of an IR emitter and IR camera. As in the case of stereo vision, depth information is inferred from the disparity between two images by the means of triangulation. In this case, the projected IR pattern is compared with the image captured by the IR camera. The IR projector emits patterns of non-coherent light, which then appears distorted from the perspective of the camera. In such settings, the projection of defined patterns makes explicit correspondences on the reflected image. A typical setting of the SL system is presented in figure 5.
+
+\begin{figure}[H]
+\label{fig:sl}
+\centering
+\includegraphics[width=0.7\textwidth]{fig/structuredlight}
+\caption{Structured light}
+\end{figure}
+
+	There are many pattern strategies that allow for correspondence identification, including projections of grids, dots, vertical slits and multi-color patterns. In the literature, particular attention is paid to fringe patterns (figure 6), which are suitable to maximize the measurement resolution [sensors]. Moreover, to reduce the reconstruction artefacts, the measurement process is often extended into a sequence of different pattern projections. A comprehensive assessment of such codes can be found at [SPB04 from byo3d]
+	
+	Pros and cons.
+	
+	Particularly noteworthy application of SL based depth data acquisition device is the Kinect by Microsoft. In addition to an RGB camera and an array of microphones, the device includes an IR projector-camera pair from the PrimeSense Ltd. company, used for depth measurements. The SL light pattern used in Kinect is a non-periodic speckle pattern produced by the interference of partially coherent beams [TN-2011]. In this device, every pixel is identified in the IR image using a correlation window, after which the depth information is calculated, using triangulation. The Kinect device is produced as a gaming controller for the Xbox 360 console and it is widely available at the consumer market with a relatively low price. Moreover, there are many open source drivers for the Kinect device, which make it a perfect match for robotic and research applications.
+	
 \begin{comment}
 WIKIPEDIA:
 
@@ -158,4 +213,8 @@ It is also possible to use projected patterns primarily as a means of structure 
 \end{comment}
 
 
+\section{Summary and hardware selection}
+\label{sec:3dsum}
+
+%http://www.ti.com/ww/en/analog/3dtof/index.shtml?DCMP=hpa_contributed_article&HQS=3dtof-ca
 
