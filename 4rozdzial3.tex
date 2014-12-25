@@ -1,5 +1,7 @@
-\chapter{Analysis of depth data}
+\chapter{Analysis of the depth data}
 \label{cha:analysis}
+
+This chapter presents the main tools used further in the implementation of the autonomous control mode for the MMS robot. 
 
 A point cloud is a set of data points in some coordinate system. In a three-dimensional coordinate system, these points are usually defined by X, Y, and Z coordinates, and often are intended to represent the external surface of an object.
 
@@ -9,9 +11,17 @@ Point clouds may be created by 3D scanners. These devices measure a large number
 
 %---------------------------------------------------------------------------
 
-\section{Point cloud processing}
+\section{Basic point cloud processing}
 \label{sec:pointclouds}
 
+View transformations, filtering, outlier removal, surface normals computation.
+
+%---------------------------------------------------------------------------
+
+\section{Random Sample Consensus algorithm}
+\label{sec:ransac}
+
+Ransac applications (plane, cylinder) and basics. Pros and cons. Extensions. 
 
 %---------------------------------------------------------------------------
 
@@ -21,12 +31,42 @@ Point clouds may be created by 3D scanners. These devices measure a large number
 
 %---------------------------------------------------------------------------
 
+\section{Iterative Closest Point algorithm}
+\label{sec:icp}
+
+%---------------------------------------------------------------------------
+
 \section{Object recognition pipeline}
 \label{sec:pipeline}
 
+\begin{figure}[H]
+\begin{center}
+\begin{tikzpicture}
+  [node distance = 5mm,auto,every node/.style={rectangle,draw,align=center, font=\footnotesize}]
+  
+  \node (kpextr) at (1,10) {Key Point \\ Extraction};
+  \node[right=of kpextr] (descr1) {Description};
+  \node[right=of descr1] (match1) {Matching};
+  \node[draw=none,fill=none, node distance=2mm, above=of match1](ann1) {\small Recognition Pipeline for Local Descriptors};
+  \node[right=of match1] (corr) {Correspondence \\ Grouping};
+  \node[right=of corr] (absor) {Absolute \\ Orientation};
+  \node[below right=of absor] (icp) {ICP \\ Refinement};
+  \node[right=of icp] (verify) {Hypothesis \\ Verification};
+  \node[below left=of icp] (align) {Alignment};
+  \node[left=of align] (match2) {Matching};
+  \node[left=of match2] (descr2) {Desription};
+  \node[left=of descr2] (segm) {Segmentation};
+  \node[draw=none,fill=none, node distance=2cm, below=of ann1](ann2) {\small Recognition Pipeline for Global Descriptors};
 
 
+  \foreach \from/\to in {kpextr/descr1,descr1/match1, match1/corr, corr/absor, absor/icp, icp/verify, segm/descr2, descr2/match2, match2/align, align/icp}
+    \draw[->] (\from) -- (\to);
 
+\end{tikzpicture}
 
+\caption{Object recognition pipeline}
 
+\label{fig:objpipe}
 
+\end{center}
+\end{figure}

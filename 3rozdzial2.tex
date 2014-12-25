@@ -7,12 +7,16 @@
 What is a depth map. Classification of aqcuisition methods - passive and active, number of vantage points. This chapter provides a brief description of the operating principle of some commonly used techniques with their advantages and disadvantages.
 \end{comment}
 
+
+
 Why use 3D data? Applications in robotics!
 In computer vision, a depth map is a type of image, where each pixel value represents distance to the corresponding point in the scene. Just as in the grey scale image, it typically takes the form of a two dimensional array and it is the simplest way of representing and storing depth measurements from a scene.
 
 The first depth-map acquisition techniques emerged as a replacement for a contact-based coordinate measuring machines (CMM). CMMs were used in the industrial quality control applications and worked by recording the displacement of a probe tip sliding across a solid surface. Such method was time consuming and inadequate for fragile objects. Modern, contact-less 3D scanning apparatus overcome those limitations by using light to interact with the environment. The new technology had also extended the application area of 3D scanning to the field of robotic perception.
 
 Methods of 3D data aqcuisition are classified by the light source they utilize to measure depth. Passive techniques rely only on the ambient light, whereas active ones operate by projecting illumination onto an object and recording the reflected beam. In the following sections, examples of both categories are presented, with a brief description of their principles of operation and a discussion of advantages and disadvantages.
+
+Add active projection of artificial texture - complete depth info as in Ensenso cameras.
 
 %-------------------------------------------------------
 
@@ -166,9 +170,11 @@ The structured light (SL) depth measurement technique combines some of the featu
 
 	There are many pattern strategies that allow for correspondence identification, including projections of grids, dots, vertical slits and multi-color patterns. In the literature, particular attention is paid to fringe patterns (figure 6), which are suitable to maximize the measurement resolution [sensors]. Moreover, to reduce the reconstruction artefacts, the measurement process is often extended into a sequence of different pattern projections. A comprehensive assessment of such codes can be found at [SPB04 from byo3d]
 	
-	Pros and cons.
+	Depth measuring devices that employ the SL technique suffer from many drawbacks. Utilizing multiple pattern frames introduces high latency and makes the measurement ill conditioned for dynamic scenes. Moreover, the system performance is degraded in bright ambient light. On the other hand, popular SL devices are characterized with relatively high, VGA (640x480) depth map resolution and are easily accessible on the consumer market.
 	
 	Particularly noteworthy application of SL based depth data acquisition device is the Kinect by Microsoft. In addition to an RGB camera and an array of microphones, the device includes an IR projector-camera pair from the PrimeSense Ltd. company, used for depth measurements. The SL light pattern used in Kinect is a non-periodic speckle pattern produced by the interference of partially coherent beams [TN-2011]. In this device, every pixel is identified in the IR image using a correlation window, after which the depth information is calculated, using triangulation. The Kinect device is produced as a gaming controller for the Xbox 360 console and it is widely available at the consumer market with a relatively low price. Moreover, there are many open source drivers for the Kinect device, which make it a perfect match for robotic and research applications.
+	
+	PICTURE WITH KINECT AND THE SPECLE PATTERN
 	
 \begin{comment}
 WIKIPEDIA:
@@ -218,3 +224,56 @@ It is also possible to use projected patterns primarily as a means of structure 
 
 %http://www.ti.com/ww/en/analog/3dtof/index.shtml?DCMP=hpa_contributed_article&HQS=3dtof-ca
 
+Three of the most popular depth map acquisition techniques were presented in this chapter, including stereo vision, time of flight and structured light. Each method has its advantages and disadvantages and they all have already been successfully applied in robotics. A comparative summary of each method characteristics is presented in Table \ref{tab:depthcompar}.
+
+\begin{table}[h]
+\begin{center}
+\begin{tabular}{@{}rccc@{}}
+\toprule
+Feature/Technique                                                                                            & Stereo Vision                                                                                                   & Time of Flight                                                                                                       & Structured Light \\ \midrule
+\rowcolor[HTML]{EFEFEF} 
+\multicolumn{1}{r|}{\cellcolor[HTML]{EFEFEF}\begin{tabular}[c]{@{}r@{}}Depth data\\ generation\end{tabular}} & \multicolumn{1}{c|}{\cellcolor[HTML]{EFEFEF}\begin{tabular}[c]{@{}c@{}}Directly out \\ of chipset\end{tabular}} & \multicolumn{1}{c|}{\cellcolor[HTML]{EFEFEF}\begin{tabular}[c]{@{}c@{}}High software\\ processing\end{tabular}}      & \begin{tabular}[c]{@{}c@{}}Medium software\\ processing\end{tabular}      \\
+\multicolumn{1}{r|}{Latency}                                                                                 & \multicolumn{1}{c|}{Medium}                                                                                     & \multicolumn{1}{c|}{Low}                                                                                             & Medium                                                                    \\
+\rowcolor[HTML]{EFEFEF} 
+\multicolumn{1}{r|}{\cellcolor[HTML]{EFEFEF}\begin{tabular}[c]{@{}r@{}}Low light\\ performance\end{tabular}} & \multicolumn{1}{c|}{\cellcolor[HTML]{EFEFEF}Weak}                                                               & \multicolumn{1}{c|}{\cellcolor[HTML]{EFEFEF}Good}                                                                    & Good                                                                      \\
+\multicolumn{1}{r|}{\begin{tabular}[c]{@{}r@{}}Bright light\\ performance\end{tabular}}                      & \multicolumn{1}{c|}{Good}                                                                                       & \multicolumn{1}{c|}{Medium}                                                                                          & Medium                                                                    \\
+\rowcolor[HTML]{EFEFEF} 
+\multicolumn{1}{r|}{\cellcolor[HTML]{EFEFEF}\begin{tabular}[c]{@{}r@{}}Power\\ consumption\end{tabular}}     & \multicolumn{1}{c|}{\cellcolor[HTML]{EFEFEF}Low}                                                                & \multicolumn{1}{c|}{\cellcolor[HTML]{EFEFEF}\begin{tabular}[c]{@{}c@{}}Medium - scales\\ with distance\end{tabular}} & \begin{tabular}[c]{@{}c@{}}Medium - scales \\ with distance\end{tabular}  \\
+\multicolumn{1}{r|}{Resolution}                                                                              & \multicolumn{1}{c|}{Camera dependent}                                                                           & \multicolumn{1}{c|}{QQVGA, QVGA}                                                                                     & VGA, 1080p                                                                \\
+\rowcolor[HTML]{EFEFEF} 
+\multicolumn{1}{r|}{\cellcolor[HTML]{EFEFEF}Accurracy}                                                       & \multicolumn{1}{c|}{\cellcolor[HTML]{EFEFEF}mm, cm}                                                              & \multicolumn{1}{c|}{\cellcolor[HTML]{EFEFEF}mm, cm}                                                                  & \SI{}{\micro\meter}, cm                                                                    \\
+\multicolumn{1}{r|}{Scanning speed}                                                                          & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Medium - limited by\\  software complexity\end{tabular}}         & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Fast - limited by \\ sensor speed\end{tabular}}                       & \begin{tabular}[c]{@{}c@{}}Fast - limited by\\  camera speed\end{tabular} \\ \bottomrule
+\end{tabular}
+\caption {Qualitative comparison of depth acquisition techniques [2]}
+
+\label{tab:depthcompar}
+% 2 - http://www.ti.com/ww/en/analog/3dtof/index.shtml?DCMP=hpa_contributed_article&HQS=3dtof-ca
+\end{center}
+\end{table}
+
+In order to fulfil project assumptions, one solution providing depth map measurement had to be chosen. In the stereo vision technology, ready-made devices unfortunately did not fit within the project budget. Utilizing this technique would therefore require an own design of the stereo vision system. Such solution would probably be the least expensive, but require an extensive amount of work and time. Therefore, the author focused on finding a ready-made solution in the remaining technologies. The DepthSense 311 [3] device was found as a representative of the ToF technique, and the Asus Xtion Pro Live [4] was considered as an option from the SL method. Both devices are available in similiar prices and provide the same frame rate of 30 frames per second. The Asus device, however, offers higher depth map resolution (VGA instead of QQVGA) and has better support from the open source community. The Asus Xtion is based on the PrimeSense Ltd. depth sensing hardware, similarly to the popular Kinect device and is even compatible with the same open source drivers. Nonetheless, it was chosen over the Kinect device, because it has smaller size and is powered directly from the USB port (the Kinect requires external power source). Main specifications of the Asus Xtion Pro device are provided in the Table \ref{tab:asus}.
+
+\begin{table}[h]
+
+\begin{center}
+
+\begin{tabular}{r||l}
+\hline
+Operating range      & Between 0.8m and 3.5m                                                                   \\
+
+\hline
+Field of view        & \SI{58}{\degree H}, \SI{45}{\degree V}, \SI{70}{\degree D} \\
+
+\hline
+Depth map resolution & \begin{tabular}[c]{@{}l@{}}VGA (640x480) : 30 fps\\ QVGA (320x240): 60 fps\end{tabular} \\
+
+\hline
+Interface            & USB2.0/ 3.0                                                                             \\
+
+\hline
+Dimensions           &  18 x 3.5 x 5 cm  \\ \hline
+\end{tabular}
+\caption{Asus Xtion Pro Live specification}
+\label{tab:asus}
+\end{center}
+\end{table}
