@@ -1,18 +1,81 @@
 \chapter{Analysis of the depth data}
 \label{cha:analysis}
 
-This chapter presents the main tools used further in the implementation of the autonomous control mode for the MMS robot. 
+The acquired depth information can be stored in computer memory in two ways. The first is the depth map, which takes the form of a two dimensional array, similarly to the plain gray-scale image. In this case, however, the depth measurement is stored in place of the color intensity. Depth map is the simplest way to represent and store the acquired depth of the scene and it is usually obtained directly from the sensor driver. The main disadvantage of a depth map is its inflexibility. This representation is strictly bound to the camera point of view and thus it is inconvenient in further processing.
 
-A point cloud is a set of data points in some coordinate system. In a three-dimensional coordinate system, these points are usually defined by X, Y, and Z coordinates, and often are intended to represent the external surface of an object.
+The second representation of a scene's depth information is a point cloud. Generally speaking, it is a set of data points in some coordinate system. Typically, the Cartesian system is used and the points are defined by their x, y and z coordinates. Point clouds are derived from depth maps and offer new capabilities, such as viewpoint transformation or cloud concatenation.
 
-Point clouds may be created by 3D scanners. These devices measure a large number of points on an object's surface, and often output a point cloud as a data file. The point cloud represents the set of points that the device has measured.
+ Furthermore, most software libraries provide an interface to interactively manipulate and visualize the point cloud, which is a useful tool when 
 
-
+This chapter presents the main tools used further in the implementation of the autonomous control mode for the MMS robot.
 
 %---------------------------------------------------------------------------
 
 \section{Basic point cloud processing}
 \label{sec:pointclouds}
+
+A frequently used operation during the processing of a point cloud is the affine transformation. Point clouds can be translated, rotated and scaled by multiplying a transformation matrix $A \in \mathbb{R}^{4x4}$ with data points in homogeneous coordinates $[x,y,z,1]^T$. Basic transformation matrices are presented in the Figure \ref{fig:transformations}. Presented transformations can be further composed by multiplication to produce more complex ones.
+
+\begin{figure}[H]  
+
+  \begin{minipage}{.3\linewidth}
+    \centering
+    \[A_t=\left[\begin{array}{cccc}
+      1 & 0 & 0 & t_x \\
+      0 & 1 & 0 & t_y \\
+      0 & 0 & 1 & t_z \\
+      0 & 0 & 0 & 1
+    \end{array}\right]\]
+    Translation by a vector $t=[t_x,t_y,t_z]^T$
+  \end{minipage}%
+  \begin{minipage}{.3\linewidth}
+    \centering
+    \[A_s=\left[\begin{array}{cccc}
+      S_x & 0 & 0 & 0 \\
+      0 & S_y & 0 & 0 \\
+      0 & 0 & S_z & 0 \\
+      0 & 0 & 0 & 1
+    \end{array}\right]\]
+    Scaling along $x,y,z$ by factors $S_x,S_y,S_z$
+  \end{minipage}  
+  \begin{minipage}{.4\linewidth}
+    \centering
+    \[A_x=\left[\begin{array}{cccc}
+      1 & 0 & 0 & 0 \\
+      0 & cos(\theta_x) & -sin(\theta_x) & 0 \\
+      0 & sin(\theta_x) & cos(\theta_x) & 0 \\
+      0 & 0 & 0 & 1
+    \end{array}\right]\]
+    Rotation around $x$ with \\ $\theta_x$ angle
+  \end{minipage}%
+  
+  \begin{minipage}{.5\linewidth}
+    \centering
+    \[A_y=\left[\begin{array}{cccc}
+      cos(\theta_y) & 0 & sin(\theta_y) & 0 \\
+      0 & 1 & 0 & 0 \\
+      -sin(\theta_y) & 0 & cos(\theta_y) & 0 \\
+      0 & 0 & 0 & 1
+    \end{array}\right]\]
+    Rotation around $y$ with $\theta_y$ angle 
+  \end{minipage}
+  \begin{minipage}{.5\linewidth}
+    \centering
+    \[A_z=\left[\begin{array}{cccc}
+      cos(\theta_z) & -sin(\theta_z) & 0 & 0 \\
+      sin(\theta_z) & cos(\theta_z) & 0 & 0 \\
+      0 & 0 & 1 & 0 \\
+      0 & 0 & 0 & 1
+    \end{array}\right]\]
+    Rotation around $z$ with $\theta_z$ angle 
+  \end{minipage}
+  
+  
+  \caption{Basic affine transformations}
+  \label{fig:transformations}
+\end{figure}
+
+Another useful type of operation is spatial filtering. Probably the most basic filter is the pass-through filter, which reject all points outside a given range along a specified dimension. This procedure allows to focus the analysis process on the region of interest, i.e. the reachable workspace of a manipulator. Apart from limiting cloud dimensions, the number of data points can be also reduced by downsampling. The voxel grid filter is typically used for this purpose. This filter creates a three dimensional regular grid over the input point cloud data and then, in each voxel, approximates all the present data points with their centroid. Such reduction is particularly useful when large point cloud datasets have to be processed online with limited computing resources.
 
 View transformations, filtering, outlier removal, surface normals computation.
 
