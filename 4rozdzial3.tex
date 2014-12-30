@@ -88,7 +88,17 @@ manifests itself in the form of sparse outliers, which corrupt the results of fu
 \caption{Statistical outlier removal [tutorials]}
 \end{figure}
 
-K-neighbourhood? Many of the algorithms used further during the analysis of a point cloud base on the notion of a surface normal, known from the 3D geometry. These vectors are also widely used for shading in 3D computer graphics and a variety of methods have already been developed to solve the surface normal estimation problem. One of the simplest uses the least-squares plane fitting to estimate the normal to a plane tangent to the surface, which approximates the desired vector [Rusu]. More specifically, for a given point on the surface, it's $k$-neighbourhood centroid $\bar{p}$ is calculated as:
+%Info from Rusu dissertation
+
+In a given point cloud, a single point by itself does not provide much information about the surface to analyse. Therefore, an essential concept in depth data analysis is the local neighbourhood of a point. For a query point $p_q$ in the point cloud $P$ its neighbourhood is given by:
+\begin{equation}
+d(p_	q, p_i) \leq r
+\end{equation}
+where $p_i \in P$ is the neighbouring point, $d$ is the selected metric, typically Euclidean, and $r>0$ is the neighbourhood radius. In practice, approximate methods are used, as direct application would require calculation of distance from the query point $p_q$ to all other points in $P$. The algorithms used for neighbourhood search require a parameter $k$ specifying the maximum number of points in the neighbourhood or parameter $r$, denoting the maximum search radius. Proper determination of those parameters is crucial in further analysis. Too small values will not provide enough information about the surface. Too large, on the other hand, will average the surface and skip small details.
+
+
+
+Many of the algorithms used further during the analysis of a point cloud base on the notion of a surface normal, known from the 3D geometry. These vectors are also widely used for shading in 3D computer graphics and a variety of methods have already been developed to solve the surface normal estimation problem. One of the simplest uses the least-squares plane fitting to estimate the normal to a plane tangent to the surface, which approximates the desired vector [Rusu]. More specifically, for a given point on the surface, it's $k$-neighbourhood centroid $\bar{p}$ is calculated as:
 \begin{equation} 
 \bar{p} = \frac{1}{k} \cdot \sum\limits_{i=1}^{k} p_i 
 \end{equation}
@@ -96,25 +106,38 @@ The tangent plane is thereafter defined by the centroid $\bar{p}$ and the sought
 \begin{equation}
 C = \frac{1}{k}\sum\limits_{i=1}^{k}(p_i - \bar{p})\cdot (p_i - \bar{p})^\intercal
 \end{equation}
-The covariance matrix $C$ is symmetric, positive semi-definite and possess three real eigenvalues $\lambda_j \geq 0, i = 1,2,3$. The eigenvector corresponding to the smallest eigenvalue is an approximation of the desired normal vector $\vec{n}$, disregarding the sign.
+The covariance matrix $C$ is symmetric, positive semi-definite and possess three real eigenvalues $\lambda_j \geq 0, i = 1,2,3$. The eigenvector corresponding to the smallest eigenvalue is an approximation of the desired normal vector $\vec{n}$, disregarding the sign. Furthermore, if the viewpoint $v_p$ is known, the normal $\vec{n}$ has to be oriented towards  $v_p$, which means that it has to satisfy the equation:
+\begin{equation}
+\vec{n}\cdot(v_p-p_i) > 0
+\end{equation}
 
 
 %---------------------------------------------------------------------------
 
-\section{Random Sample Consensus algorithm}
+\section{The Random Sample Consensus algorithm}
 \label{sec:ransac}
-
-Ransac applications (plane, cylinder) and basics. Pros and cons. Extensions. 
+The indoor human environment is abundant of regularly shaped objects that could be described with basic geometrical models, such as planes, spheres or cylinders. The plane model:
+\begin{equation}
+\theta_1 \cdot x+\theta_2 \cdot y+\theta_3 \cdot z+\theta_4 = 0
+\end{equation}
+is particularly useful, as the floor, walls or furniture is typically composed of flat surfaces. By knowing which points belong to the surface of a floor, the robot can autonomously navigate and avoid collisions. For this reason, a robust model fitting algorithm is a strongly desired tool in the analysis of the depth data. The point dataset received from the depth camera , however, consists of both points that belong to the model, the inliers, and a lot of other points in the scene, the outliers. Therefore direct usage of classic model fitting algorithms, such as the least squares method, would not provide the desired effect, as they try to fit the model into all the input data points, including outliers. As an alternative, the Random Sample Consensus (RANSAC) algorithm, can effectively cope with such problems. In its basic form, the RANSAC algorithm is essentially composed of two, iteratively repeated steps [Dummies,Wiki]:
+\begin{enumerate}
+\item Firstly, a minimal sample subset is randomly selected from the input dataset. The model parameters are computed using only the selected subset. The cardinality of the subset is the smallest sufficient to determine the model parameters.
+\item Secondly, the remaining dataset points are tested to be consistent with the model computed in the sampling step. A data point will be considered as an inlier if it fits the computed model within a defined error threshold. The set of such elements is called a consensus set. If the consensus set contains enough points, the model is reestimated from all selected inliers and evaluated with the error of the inliers relative to the model.
+\end{enumerate}
+This procedure is then repeated until a termination condition is met, which usually is a fixed number of iterations.
+The main advantage of the RANSAC algorithm is the robust estimation. This method is able to fit a model with high accuracy even if the data set contains a significant amount of outliers. On the other hand, the algorithm in its basic form has several disadvantages. There is no upper bound on the time needed to estimate model parameters and by limiting the number of iterations, the obtained solution is may not be optimal. Furthermore, the RANSAC algorithm can only estimate one model per dataset and if multiple models exist, it may fail to estimate any of them. Since the original RANSAC was first published in 1981, it has been widely adapted by the image processing community and many modifications that address the RANSAC limitations has been proposed. A comparative summary of the recent extensions to the RANSAC algorithm can be found for example in [dunno].
 
 %---------------------------------------------------------------------------
 
 \section{Descriptors for object recognition}
 \label{sec:descriptors}
 
+Descriptors what for. Difference between global and local. Itemize some global and local with brief description. Table with comparison. Reference to detailed info.
 
 %---------------------------------------------------------------------------
 
-\section{Iterative Closest Point algorithm}
+\section{The Iterative Closest Point algorithm}
 \label{sec:icp}
 
 %---------------------------------------------------------------------------
