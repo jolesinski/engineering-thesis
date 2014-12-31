@@ -135,6 +135,20 @@ The main advantage of the RANSAC algorithm is the robust estimation. This method
 
 Descriptors what for. Difference between global and local. Itemize some global and local with brief description. Table with comparison. Reference to detailed info.
 
+Object recognition - problem formulation. Point cloud matching etc.
+
+Surface normals are the most basic representation of the geometry around a certain point. Even if coupled with surface curvature, they usually does not provide enough descriptive information for object recognition and pose estimation. To achieve better performance in such tasks, more complex and higher dimensional descriptors have been proposed in the literature [summary]. A descriptor is considered to be good if it is able to capture the same surface characteristics, regardless of rigid transformations, varying sampling density and noise. In general, 3D shape descriptors a divided into local and global. The former describe only the local geometry around a query point, while the latter represent the geometry of a whole object. A few selected descriptors will be presented further in this section.
+
+The Point Feature Histogram is a generalization of both surface normals and curvature estimates. It represents the relative orientation of normals between point pairs, consisting of the query point $p_i$ and points in its neighbourhood $p_j$. For each point pair, using the surface normal $n_i$ at $p_i$, a new coordinate frame $u,v,w$ is constructed as follows:
+\begin{equation}
+u = n_i,\  v = u \times \frac{p_i-p_j}{d},\  w = u \times v
+\end{equation}
+where $d = \|p_i-p_j\|_2$ is the Euclidean distance between $p_i$ and $p_j$. Using this reference frame, the difference between normals at $p_i$ and $p_j$ is expressed by the angular features $\alpha, \phi, \theta$, given by:
+\begin{equation}
+\alpha = v \cdot n_i, \  \phi = u \cdot \frac{(p_i-p_j)}{d}, \ \theta = arctan(w\cdot n_i, u \cdot n_i)
+\end{equation}
+PFH, FPFH, SHOT,	Keypoint extraction, VFH
+
 %---------------------------------------------------------------------------
 
 \section{The Iterative Closest Point algorithm}
@@ -170,7 +184,7 @@ Descriptors what for. Difference between global and local. Itemize some global a
 
 \end{tikzpicture}
 
-\caption{Object recognition pipeline}
+\caption{Object recognition pipeline [IEEE]}
 
 \label{fig:objpipe}
 
