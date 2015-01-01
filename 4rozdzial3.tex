@@ -139,15 +139,28 @@ Object recognition - problem formulation. Point cloud matching etc.
 
 Surface normals are the most basic representation of the geometry around a certain point. Even if coupled with surface curvature, they usually does not provide enough descriptive information for object recognition and pose estimation. To achieve better performance in such tasks, more complex and higher dimensional descriptors have been proposed in the literature [summary]. A descriptor is considered to be good if it is able to capture the same surface characteristics, regardless of rigid transformations, varying sampling density and noise. In general, 3D shape descriptors a divided into local and global. The former describe only the local geometry around a query point, while the latter represent the geometry of a whole object. A few selected descriptors will be presented further in this section.
 
-The Point Feature Histogram is a generalization of both surface normals and curvature estimates. It represents the relative orientation of normals between point pairs, consisting of the query point $p_i$ and points in its neighbourhood $p_j$. For each point pair, using the surface normal $n_i$ at $p_i$, a new coordinate frame $u,v,w$ is constructed as follows:
+The Point Feature Histogram (PFH) is a generalization of both surface normals and curvature estimates. It represents the relative orientation of normals between every point pair $(p_i,p_j)$ in the neighbourhood of the query point $p_q$. For each point pair, using the surface normal $n_i$ at $p_i$, a new coordinate frame $u,v,w$ is constructed as follows:
 \begin{equation}
 u = n_i,\  v = u \times \frac{p_i-p_j}{d},\  w = u \times v
 \end{equation}
 where $d = \|p_i-p_j\|_2$ is the Euclidean distance between $p_i$ and $p_j$. Using this reference frame, the difference between normals at $p_i$ and $p_j$ is expressed by the angular features $\alpha, \phi, \theta$, given by:
 \begin{equation}
+\label{eq:angularfeat}
 \alpha = v \cdot n_i, \  \phi = u \cdot \frac{(p_i-p_j)}{d}, \ \theta = arctan(w\cdot n_i, u \cdot n_i)
 \end{equation}
-PFH, FPFH, SHOT,	Keypoint extraction, VFH
+Finally, to create the PFH descriptor, the angular features are binned into a histogram. The angular ranges are typically divided into 5 subdivisions, thus receiving a $3^5=125$ binned histogram, that counts occurrences of any value combination for every point pair $(p_i, p_j)$.
+
+The main disadvantage of the PFH descriptor is its $O(nk^2)$ complexity, where $n$ is the number of points in the point cloud and $k$ is the number of each points neighbours. For large datasets, this is one of the major bottlenecks during online processing. To overcome this problem a simplification to the PFH formulation, called Fast Point Feature Histogram has been proposed (FPFH) [Proposal]. In the first step of the FPFH, the angular features $\alpha, \phi, \theta$ are computed only between the query point $p_q$ and its k-nearest neighbours, as described in Equation \ref{eq:angularfeat}. Those features produce a histogram, called Simplified Point Feature Histogram (SPFH). 	The SPFH is computed for every point in the cloud, and then, the FPFH descriptor is formed as follows:
+\begin{equation}
+FPFH(p_q) = SPFH(p_q) + \frac{1}{k}\sum\limits_{i=1}^k\frac{1}{w_i}SPFH(i)
+\end{equation}
+where $w_i$ is a distance between $p_q$ and $p_k$ in some metric space. The FPFH descriptor reduces the computational complexity of the PFH to $O(nk)$, while maintaining similar descriptive performance.
+
+Figure: Influence diagrams
+
+SHOT or VFH
+
+%PFH, FPFH, SHOT,	Keypoint extraction, VFH
 
 %---------------------------------------------------------------------------
 

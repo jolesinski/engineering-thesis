@@ -3,12 +3,146 @@
 
 %---------------------------------------------------------------------------
 
+\section{Hardware setting}
+\label{sec:setting}
+
+\usetikzlibrary{patterns}
+\usetikzlibrary{calc}
+\usetikzlibrary{decorations.pathmorphing}
+
+\newcommand{\nvar}[2]{%
+    \newlength{#1}
+    \setlength{#1}{#2}
+}
+
+% Define a few constants for drawing
+\nvar{\dg}{0.3cm}
+\def\dw{0.25}\def\dh{1.3}
+\nvar{\ddx}{1.5cm}
+
+% Define commands for links, joints and such
+\def\link{\draw [double distance=1.5mm, thick] (0,0)--}
+\def\joint{%
+    \filldraw [fill=white] (0,0) circle (5pt);
+    \fill[black] circle (2pt);
+}
+\def\grip{%
+	
+    \filldraw [fill=white, thick] (0cm,\dg) rectangle (3mm,-\dg);    
+    
+    %\draw[ultra thick](0cm,\dg)--(0cm,-\dg)--(3mm,-\dg)--(3mm,\dg) -- cycle;
+    \fill (1.5mm, -\dg) -- +(-1.5mm,-1.5mm) -- +(1.5mm,-1.5mm);
+    %\fill (0cm, -0.5\dg)+(0cm,1.5pt) -- +(0.6\dg,0cm) -- +(0pt,-1.5pt);
+}
+\def\robotbase{%
+    \draw[thick](-0.5,0) rectangle (0.5,-0.3);
+    \draw[thick](-1,-0.3) -- (0.6,-0.3)  -- (0.85,-0.65) -- (0.6,-1) -- (-1,-1);
+	\draw[decorate, decoration={snake, segment length=0.43cm,amplitude=.9}] (-1,-0.3)  -- (-1,-1); 
+    \filldraw [fill=white, thick] (0.35,-0.9) circle (0.4);    
+    
+    \draw (-1.5,-\dh)-- (1.5,-\dh);
+    \fill[pattern=north east lines] (-1.5,-\dh) rectangle (1.5,-\dh-0.5);
+}
+
+% Draw an angle annotation
+% Input:
+%   #1 Offset (optional)
+%   #2 Angle
+%   #3 Label
+% Example:
+%   \angann{30}{$\theta_1$}
+\newcommand{\angann}[3][\ddx]{%
+    \begin{scope}[red]
+    \draw [dashed, red] (0,0) -- (1.2*#1,0pt);
+    \draw [->, shorten >=3.5pt] (#1,0pt) arc (0:#2:#1);
+    % Unfortunately automatic node placement on an arc is not supported yet.
+    % We therefore have to compute an appropriate coordinate ourselves.
+    \node at (#2/2-2:#1+8pt) {#3};
+    \end{scope}
+}
+
+% Draw line annotation
+% Input:
+%   #1 Line offset (optional)
+%   #2 Line angle
+%   #3 Line length
+%   #5 Line label
+% Example:
+%   \lineann[1]{30}{2}{$L_1$}
+\newcommand{\lineann}[4][0.5]{%
+    \begin{scope}[rotate=#2, blue,inner sep=2pt]
+        \draw[dashed, blue!40] (0,0) -- +(0,#1)
+            node [coordinate, near end] (a) {};
+        \draw[dashed, blue!40] (#3,0) -- +(0,#1)
+            node [coordinate, near end] (b) {};
+        \draw[|<->|] (a) -- node[fill=white] {#4} (b);
+    \end{scope}
+}
+
+% Draw view
+% Input:
+%   #1 Line offset (optional)
+%   #2 Line angle
+%   #3 Line length
+%   #5 Line label
+% Example:
+%   \lineann[1]{30}{2}{$L_1$}
+\newcommand{\view}[4]{%
+    \begin{scope}[rotate=#2, blue,inner sep=2pt]
+        \draw[dashed, blue!40] (0,0) -- +(0,#1)
+            node [coordinate, near end] (a) {};
+        \draw[dashed, blue!40] (#3,0) -- +(0,#1)
+            node [coordinate, near end] (b) {};
+        \draw[|<->|] (a) -- node[fill=white] {#4} (b);
+    \end{scope}
+}
+
+
+% Define the kinematic parameters of the three link manipulator.
+\def\thetaone{120}
+\def\Lone{2}
+\def\thetatwo{-60}
+\def\Ltwo{2}
+\def\thetathree{-20}
+\def\Lthree{1}
+
+\begin{tikzpicture}
+    \lineann[1.5]{-90}{\dh}{$L_0$}
+    \robotbase
+    \angann[1.2cm]{\thetaone}{$\theta_1$}
+    \lineann[0.7]{\thetaone}{\Lone}{$L_1$}
+    \link(\thetaone:\Lone);
+    \joint
+    \begin{scope}[shift=(\thetaone:\Lone), rotate=\thetaone]
+        \angann{\thetatwo}{$\theta_2$}
+        \lineann[-0.5]{\thetatwo}{\Ltwo}{$L_2$}
+        \link(\thetatwo:\Ltwo);
+        \joint
+        \begin{scope}[shift=(\thetatwo:\Ltwo), rotate=\thetatwo]
+            \angann{\thetathree}{$\theta_3$}
+            \lineann[0.7]{\thetathree}{\Lthree}{$L_3$}
+            \draw [dashed, red,rotate=\thetathree] (0,0) -- (1.2\ddx,0pt);
+            \link(\thetathree:\Lthree);
+            \joint
+            \begin{scope}[shift=(\thetathree:\Lthree), rotate=\thetathree]
+                \grip
+                \begin{scope}[shift={(1.5mm,-\dg)}, rotate=-90]
+                \draw (0,0) -- (7,0);
+	            \end{scope}
+            \end{scope}
+        \end{scope}
+    \end{scope}
+\end{tikzpicture}
+
+
+%---------------------------------------------------------------------------
+
 \section{Algorithm implementation}
 \label{sec:implementatnion}
 
 
 %---------------------------------------------------------------------------
 
-\section{Testing in the real environment}
+\section{Testing environment and results}
 \label{sec:testing}
 
