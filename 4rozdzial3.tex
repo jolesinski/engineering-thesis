@@ -118,7 +118,8 @@ The covariance matrix $C$ is symmetric, positive semi-definite and possess three
 \label{sec:ransac}
 The indoor human environment is abundant of regularly shaped objects that could be described with basic geometrical models, such as planes, spheres or cylinders. The plane model:
 \begin{equation}
-\theta_1 \cdot x+\theta_2 \cdot y+\theta_3 \cdot z+\theta_4 = 0
+A \cdot x+ B \cdot y+ C \cdot z+ D= 0
+\label{eq:planemodel}
 \end{equation}
 is particularly useful, as the floor, walls or furniture is typically composed of flat surfaces. By knowing which points belong to the surface of a floor, the robot can autonomously navigate and avoid collisions. For this reason, a robust model fitting algorithm is a strongly desired tool in the analysis of the depth data. The point dataset received from the depth camera , however, consists of both points that belong to the model, the inliers, and a lot of other points in the scene, the outliers. Therefore direct usage of classic model fitting algorithms, such as the least squares method, would not provide the desired effect, as they try to fit the model into all the input data points, including outliers. As an alternative, the Random Sample Consensus (RANSAC) algorithm, can effectively cope with such problems. In its basic form, the RANSAC algorithm is essentially composed of two, iteratively repeated steps [Dummies,Wiki]:
 \begin{enumerate}
@@ -197,7 +198,7 @@ SHOT or VFH
 
 \end{tikzpicture}
 
-\caption{Object recognition pipeline [IEEE]}
+\caption{Object recognition pipeline \cite{AldomaMTWPZRGV12}}
 
 \label{fig:objpipe}
 
