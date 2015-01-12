@@ -1,7 +1,7 @@
 \chapter{Implementation and testing}
 \label{cha:implandtest}
 
-A MMS robot equipped with a depth acquisition system is a particularly well suited tool to perform tasks with a high degree of autonomy. The high volume of environmental information provided by a depth sensor allows the robot to successfully operate in an unstructured and changing environment without human guidance. In this work, the task which the robot has to solve fully autonomously is the problem of finding a predefined object in its working environment. This problem required implementing two mechanisms for depth data processing. The first was the detection of obstacles, in order to ensure save movement of the mobile platform and the second one was the recognition of the object to accomplish the final task. The Point Cloud Library (PCL) \cite{Rusu_ICRA2011_PCL} was used to implement the depth data analysis on the robot. PCL is an open source project for 3D point cloud processing. The library contains a vast array of state-of-the-art algorithms for filtering, feature estimation, segmentation, registration and model fitting. A detailed description of the developed autonomous control mode is provided in the following sections.
+A MMS robot equipped with a depth acquisition system is a particularly well suited tool to perform tasks with a high degree of autonomy. The high volume of environmental information provided by a depth sensor allows the robot to successfully operate in an unstructured and changing environment without human guidance. In this work, the task which the robot has to solve fully autonomously is the problem of finding a predefined object in its working environment. This problem required implementing two mechanisms for depth data processing. The first was the detection of obstacles, in order to ensure save movement of the mobile platform and the second one was the recognition of the object to accomplish the final task. The Point Cloud Library (PCL) \cite{Rusu_ICRA2011_PCL} was used to implement the depth data analysis on the robot. PCL is an open source project for 3D point cloud processing. The library contains a vast array of state-of-the-art algorithms for filtering, feature estimation, segmentation, registration and model fitting. OpenMP and FLANN. A detailed description of the developed autonomous control mode is provided in the following sections.
 
 %---------------------------------------------------------------------------
 
@@ -89,15 +89,30 @@ The last stage of the obstacle detection processing is the outlier removal.
 \section{Object recognition implementation}
 \label{sec:detection}
 
-In addition to ensuring safe movement of the robot, previously described obstacles  detection pipeline also performs most of the necessary preprocessing steps for object recognition. Upon obstacle detection, the resulting point cloud contains points that belong only to the objects in the scene, thus further processing is directly applied to that cloud. 
+In addition to ensuring safe movement of the robot, previously described obstacle  detection pipeline also performs most of the necessary preprocessing steps for object recognition. Upon obstacle detection, the resulting point cloud contains points that belong only to the objects in the scene, thus further processing is directly applied to that cloud. 
 
-Two different approaches of object recognition were implemented during the project. The first one uses an analytical model of the objects shape and allows to recognize objects with simple geometric shapes, such as spheres or cylinders. The second, more general method is based on the objects detailed model, acquired during 3D scanning. Despite the differences, both of these approaches rely on the RANSAC estimator and share some common preprocessing steps, including the normal estimation and cluster segmentation.
+Two different approaches of object recognition were implemented during the project. The first one uses an analytical model of the objects shape and allows to recognize objects with simple geometric structures, such as spheres or cylinders. The second, more general method is based on the objects detailed model, acquired during 3D scanning. Despite the differences, both of these approaches share some common preprocessing steps, including the normal estimation and cluster segmentation. To determine the normal vectors for a given cloud, the NormalEstimationOMP class, available in PCL library, is used. This class exploits the OpenMP [x] library to parallelize computations, which significantly accelerates the process of normal estimation. 
+
+	It is assumed that during the exploration of the environment, the robot can encounter a scene with multiple objects. In such situation, it is convenient to isolate individual items and analyse them separately. For this purpose, a greedy algorithm of Euclidean Cluster Extraction is applied to the point cloud. The parameters of the algorithm were experimentally chosen, to match the size of individual clusters with objects used as targets. VALUES. The last parameter, due to the nature of the euclidean segmentation, imposes a minimal distance of $10cm$ between object surfaces. As a result of the segmentation process, a vector of point clouds is obtained and further analysis is applied to each of its elements.
+	
+	In case of the first, geometric primitives based approach, the model fitting is performed directly on the point clouds obtained after the segmentation. The SACSegmentationFromNormals class from PCL library is used during the fitting process. In this approach, the recognition of two geometric shapes is implemented, the sphere and the cylinder. As a result of fitting a sphere, the algorithm returns four optimized parameters: three coordinates of the sphere center point and its radius. An example of spherical object fitting is presented in the Figure X.
+	
+FIGURE
+
+For the cylinder model, seven parameters are obtained, including the radius, three coordinates of its axis direction and three coordinates of a point lying on that axis. Furthermore, in order to distinguish cylindrical objects with different heights a few additional steps are required after the model is found. Firstly, the point cloud coordinate system is transformed so as to cover the cylinder axis with the Z-axis. Next, two points with minimum and maximum $z$-coordinates are found with the getMinMax3D function from PCL. Finally, the resulting height $h$ of the cylinder is given by the difference of those coordinates, that is $h = z_{max} - z_{min}$. Figure X illustrates an example input cloud with a fitted cylinder model.
+
+FIGURE
+
+The second, general method of object recognition utilises the global recognition pipeline described in Section \ref{sec:pipeline}. This selection is justified by the fact, that the global approach requires a set of partial object scans as a training set, which can be easily acquired with available hardware. The VFH descriptor, estimated by the PCL VFHEstimation class, is used to compare the point clusters. To obtain the training data set, a series of scans by the RGB-D camera are taken from different, characteristic views of the object. For each of these scans, the VFH descriptor is calculated and added to a KD-Tree structure, which is then saved to the hard drive. During the recognition process, for a given VFH descriptor of a cluster, a nearest-neighbour search is performed in the KD-Tree structure, by the \textit{knnSearch} method from the FLANN library. If the resultant $L_1$ distance between the neighbour and the segment VFH is less than a given threshold, the procedure returns positive object recognition. The further post-processing steps, listed in Section \ref{sec:pipeline}, which estimate the 6DOF pose of an object were omitted, as the task of the robot is to only determine the existence of a given object.
 
 %---------------------------------------------------------------------------
 
 \section{Autonomous mode implementation}
 \label{sec:autonomy}
 
+Procedures of obstacle detection and object recognition provide the necessary tools to achieve the stated task of autonomous finding of predefined objects. The autonomous mode was implemented in the form of a C++ application, executed on the NVIDIA Jetson TK1 platform. This application communicates with the control server via HTTP requests, as described in Section \ref{sec:soft}. For this purpose, the HTTP POST and GET methods from cpp-netlib [??] library are utilised. All of the required communication request are encapsulated in the form of a Robot class object. The methods of this class enable the realization of such actions as driving forward, mobile platform rotation, stopping and setting the manipulator joints in given positions. 
+
+The depth data processing procedures described in preceding sections posses a significant amount of configurable parameters. To avoid having to recompile the code with every parameter customization, all of the relevant constants are included in a configuration file in a XML format. The path to this XML file is specified as a command-line argument of the application, together with the name of  the target to search for. The configuration file contains also information on the recognition method type and the path to the training set for the specified target name.
 
 \tikzset{
     state/.style={
@@ -161,11 +176,14 @@ Two different approaches of object recognition were implemented during the proje
 
 \end{tikzpicture}
 
-\caption{State transition diagram}
+\caption{State diagram of the autonomous mode}
 \label{fig:statetrans}
 
 \end{centering}
 \end{figure}
+
+The system operation outline is presented in the Figure \ref{fig:statetrans}, in the form of a state diagram. Three different states of motion are distinguished: forward movement (\textbf{F}), turning (\textbf{T}) and stopping (\textbf{S}). 
+At the time of entrance to each of the \textbf{F}, \textbf{T}, \textbf{S} states, a corresponding command is sent to the control server. Transitions between these states are determined by the logical values returned from the procedures of obstacle detection (\textit{OD}) and object recognition (\textit{OR}). The robot moves forward if there are no obstacles in front of it, stops if it encounters the target object and turns if it discovers an obstacle. The direction of turning is selected in a pseudo-random manner at each newly encountered obstacle. In this way, the system is able to explore the whole working environment. 
 
 %---------------------------------------------------------------------------
 
