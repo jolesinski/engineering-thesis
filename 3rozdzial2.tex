@@ -8,14 +8,11 @@ What is a depth map. Classification of aqcuisition methods - passive and active,
 \end{comment}
 
 
-
-Why use 3D data? Applications in robotics!
+The manipulation and movement tasks of a MMS robot involves continuous interaction with unstructured and changing environment. In order to develop an autonomous system, which will be able to operate in such conditions, a data acquisition system is required, that would provide the necessary information about the nearby objects surface, size and relative distances. The measurement of this type can be performed by using depth acquisition techniques, also known as three dimensional (3D) imaging.
 
 The first depth acquisition techniques emerged as a replacement for a contact-based coordinate measuring machines (CMM). CMMs were used in the industrial quality control applications and worked by recording the displacement of a probe tip sliding across a solid surface. Such method was time consuming and inadequate for fragile objects. Modern, contact-less 3D scanning apparatus overcome those limitations by using light to interact with the environment. The new technology had also extended the application area of 3D scanning to the field of robotic perception.
 
-Methods of 3D data aqcuisition are classified by the light source they utilize to measure depth. Passive techniques rely only on the ambient light, whereas active ones operate by projecting illumination onto an object and recording the reflected beam. In the following sections, examples of both categories are presented, with a brief description of their principles of operation and a discussion of advantages and disadvantages.
-
-Add active projection of artificial texture - complete depth info as in Ensenso cameras.
+Modern methods of 3D data acquisition are classified by the light source they utilize to measure depth. \textit{Passive} techniques rely only on the ambient light, whereas the \textit{active} ones operate by projecting illumination onto an object and recording the reflected beam. In the following sections, examples of both categories are presented, with a brief description of their principles of operation and a discussion of advantages and disadvantages, finalized by hardware selection for the designed MMS robot.
 
 %-------------------------------------------------------
 
@@ -32,19 +29,24 @@ Passive method. Based on human vision - biological process of Stereopsis. Depth 
 
 Stereo vision is a passive depth acquisition technique, widely used in research and  industry. Its principle of operation is based on human vision system and the biological process of stereopsis, where the disparity between two different projections of the world on the human retinas leads to the depth sensation. Analogically, in computer stereo vision technique, two (or more) displaced in space cameras concurrently acquire the scene view. From the captured images disparity, a scene depth information is then inferred. A typical scheme for stereo vision depth calculation after image acquisition is divided into two steps: the correspondence problem and triangulation.
 
+The correspondence problem is the most difficult part of the stereo vision. It can be stated as follows: given two displaced 2D images of the same scene, find points representing the same space location in those images. There are many point matching algorithms discussed in the literature. Some of them rely on computing point features, based on their neighbourhood, while others compute statistical descriptors of characteristic areas in the image, and then minimise the measured difference between analysed regions to find the best matches. The correspondence problem in computer vision is a wide and open research area, that is beyond the scope of this work. A thorough description of the problem and its solutions, is provided, for example, by \cite{Cyganek}.
+
 \begin{figure}[H]
 \label{fig:stereo}
 \centering
 \includegraphics[width=0.7\textwidth]{fig/stereovision}
 \caption{Typical Stereo Vision System}
+\label{fig:stereovision}
 \end{figure}
 
-Correspondence problem is the most difficult part of the stereo vision. It can be stated as follows: given two displaced 2D images of the same scene, find points representing the same space location in those images. There are many point matching algorithms discussed in the literature. Some of them rely on computing point features based on point neighbourhoods, others compute statistical descriptors of characteristic areas in the image, and then minimise measured difference between analysed regions to find the best matches. The correspondence problem in computer vision is a wide and open research area, that is beyond the scope of this work. For a thorough solution of the problem, the Reader can refer for example to [1].
 
-After obtaining the corresponding points, the point depth information can be derived by the means of triangulation (picture 1). if the imaging properties of the camera are known, two three-dimensional lines, from the camera's projection centres to the examined point can be drawn. The intersection of those lines is then used to infer the depth of the point. 
+After obtaining the corresponding points, the point depth information can be derived by the means of triangulation (Figure \ref{fig:stereovision}). if the imaging properties of the camera are known, two three-dimensional lines, from the camera's projection centres to the examined point can be drawn. The intersection of those lines is then used to infer the depth of the point. 
 
-The main advantage of the stereo vision system is that it can be built with easily accessible, standard 2D cameras. Such cameras allow to reduce the expenditure and provide relatively high resolution. On the other hand, the stereo vision systems have many drawbacks. Firstly, their performance is reduced in environments with low ambient light intensity, which makes the system impractical in some settings. Secondly, solving the correspondence problem is computationally expensive and often limit the depth acquisition frame rate. \begin{Huge} Finally...
-\end{Huge} 
+The main advantage of the stereo vision system is that it can be built with easily accessible, standard 2D cameras. Such cameras allow to reduce the expenditure and provide relatively high resolution. On the other hand, the stereo vision systems have many drawbacks. Firstly, their performance is reduced in environments with low ambient light intensity, which makes the system impractical in some settings. Secondly, the depth accuracy decreases quadratically with the distance. Finally, the algorithms used for feature extraction and matching, involved in solving the correspondence problem are computationally expensive and often limit the depth acquisition frame rate.
+
+
+ There also exists a variant of active stereo vision, utilized i.e. in the Ensenso N10 cameras \cite{ensenso}. In this case, besides the camera pair, a pattern projector is applied to add artificial texture to the scene, which helps to determine the disparity on untextured surfaces.
+
 
 
 \begin{comment}
@@ -101,18 +103,19 @@ http://www.ti.com/lit/wp/sloa190b/sloa190b.pdf
 
 Time of flight (ToF) cameras work on a completely different principle than stereoscopic systems. ToF systems are characterised with active illumination and are composed of an near infra-red (IR) emmiter and IR camera. They work by illuminating the scene with a modulated IR beam and recording the received light, as presented in the figure 5. The distance from the recorded object is then calculated by measuring the phase shift between the illuminated and reflected signals. 
 
+In the simplest form, the ToF cameras use single light pulses \cite{titof}. After a short period of illumination, the reflected energy is then integrated at every pixel with two out of phase windows over the same $\Delta t$ time, resulting in two electrical charges $Q_1$ and $Q_2$. The depth distance $d$ is then computed as $d = \frac{1}{2}c\Delta t \frac{Q_2}{Q_1+Q_2}$, where $c$ is the speed of light constant. A more advanced method is to project illumination modulated by a continuous wave signal, commonly a square wave. In this case, four sampling windows, shifted by \SI{90}{\degree} angle, resulting in $Q_1$,$Q_2$, $Q_3$ and $Q_4$ charges. The phase angle $\phi$ between the projected and the reflected signals is given by $\phi = arctan \frac{Q_3 - Q_4}{Q_1 - Q_2} $ and the final depth $d = \frac{c}{4\pi f}\phi$. The principle of the continuous wave method is illustrated by the Figure \ref{fig:tofprinciple}.
+
 ToF cameras, due to their specific architecture, are prone to errors caused by radiometric, geometric and illumination variations. The power of the emitted IR signal limits their measurement accuracy. The light entering to the sensor has an ambient and reflected components, thus high ambient light intensity reduces the signal to noise ratio. Moreover, the material and color of the object surface cause variations in the amplitude of the reflected IR signal.
 
 \begin{figure}[H]
 \label{fig:tof}
 \centering
 \includegraphics[width=0.7\textwidth]{fig/tofprinciple}
-\caption{ToF principle [??]}
+\caption{Continuous-Wave Time of Flight principle \cite{ToFbook}}
+\label{fig:tofprinciple}
 \end{figure}
 
-Rewrite this. The simplest version of a time-of-flight camera uses light pulses or a single light pulse. The illumination is switched on for a very short time, the resulting light pulse illuminates the scene and is reflected by the objects in the field of view. The camera lens gathers the reflected light and images it onto the sensor or focal plane array. Depending upon the distance, the incoming light experiences a delay. As light has a speed of approximately c = 300,000,000 meters per second, this delay is very short: an object 2.5 m away will delay the light by 16 ns.
-
-Despite problems arising from ToF principle of operation, modern ToF cameras are distinguished by relatively low latency and fast scanning speed. The depth measurements are acquired directly from the hardware, so the speed is not limited by software. Unfortunately, most of the products available on the end-user market provide relatively low depth image resolution, typically QQVGA (160x120) and the pricing rises dramatically with the resolution.
+Despite problems arising from ToF principle of operation, modern ToF cameras are distinguished by relatively low latency and fast scanning speed. The depth measurements are acquired directly from the hardware, so the speed is not limited by software processing. Unfortunately, most of the products available on the end-user market provide relatively low depth image resolution, typically QQVGA (160x120) and the price increases significantly with the resolution.
 
 
 \begin{comment}
@@ -160,22 +163,34 @@ In contrast to laser scanning systems where a single point is illuminated, the t
 
 The structured light (SL) depth measurement technique combines some of the features of both time of flight and stereo vision principles.  Similarly to ToF cameras, SL relies on active illumination, work in the near infra-red and is composed of an IR emitter and IR camera. As in the case of stereo vision, depth information is inferred from the disparity between two images by the means of triangulation. In this case, the projected IR pattern is compared with the image captured by the IR camera. The IR projector emits patterns of non-coherent light, which then appears distorted from the perspective of the camera. In such settings, the projection of defined patterns makes explicit correspondences on the reflected image. A typical setting of the SL system is presented in figure 5.
 
+
+%http://www.extremetech.com/extreme/131159-leap-motion-will-it-make-you-a-magician-or-is-it-just-handwaving
 \begin{figure}[H]
 \label{fig:sl}
 \centering
-\includegraphics[width=0.7\textwidth]{fig/structuredlight}
-\caption{Structured light}
+\includegraphics[width=0.6\textwidth]{fig/structuredlight}
+\caption{Structured light fringe patterns \cite{extremetech}}
+\label{fig:slprinciple}
 \end{figure}
 
-	There are many pattern strategies that allow for correspondence identification, including projections of grids, dots, vertical slits and multi-color patterns. In the literature, particular attention is paid to fringe patterns (figure 6), which are suitable to maximize the measurement resolution [sensors]. Moreover, to reduce the reconstruction artefacts, the measurement process is often extended into a sequence of different pattern projections. A comprehensive assessment of such codes can be found at [SPB04 from byo3d]
+	There are many pattern strategies that allow for correspondence identification, including projections of grids, dots, vertical slits and multi-color patterns. In the literature, particular attention is paid to fringe patterns (Figure \ref{fig:slprinciple}), which are suitable to maximize the measurement resolution \cite{sensors}. Moreover, to reduce the reconstruction artifacts, the measurement process is often extended into a sequence of different pattern projections. A comprehensive assessment of such pattern codes can be found in \cite{slcodes}.
 	
 	Depth measuring devices that employ the SL technique suffer from many drawbacks. Utilizing multiple pattern frames introduces high latency and makes the measurement ill conditioned for dynamic scenes. Moreover, the system performance is degraded in bright ambient light. On the other hand, popular SL devices are characterized with relatively high, VGA (640x480) depth map resolution and are easily accessible on the consumer market.
+
+
+	A particularly noteworthy application of SL based depth data acquisition device is the Kinect by Microsoft. In addition to an RGB camera and an array of microphones, the device includes an IR projector-camera pair from the PrimeSense Ltd. company, used for depth measurements. The SL light pattern used in Kinect is a non-periodic speckle pattern produced by the interference of partially coherent beams (Figure X). In this device, every pixel is identified in the IR image using a correlation window, after which the depth information is calculated, using triangulation. The Kinect device is produced as a gaming controller for the Xbox 360 console and it is widely available at the consumer market with a relatively low price. Moreover, there are many open source drivers for the Kinect device, which make it a perfect match for robotic and research applications.
 	
-	Particularly noteworthy application of SL based depth data acquisition device is the Kinect by Microsoft. In addition to an RGB camera and an array of microphones, the device includes an IR projector-camera pair from the PrimeSense Ltd. company, used for depth measurements. The SL light pattern used in Kinect is a non-periodic speckle pattern produced by the interference of partially coherent beams [TN-2011]. In this device, every pixel is identified in the IR image using a correlation window, after which the depth information is calculated, using triangulation. The Kinect device is produced as a gaming controller for the Xbox 360 console and it is widely available at the consumer market with a relatively low price. Moreover, there are many open source drivers for the Kinect device, which make it a perfect match for robotic and research applications.
+\begin{figure}[H]
+\centering
+\includegraphics[scale=0.25]{fig/KinectSpeckle}
+\caption{Kinect speckle pattern \cite{borenstein2012making}}
+\label{fig:kinectspeckle}
+\end{figure}
 	
-	PICTURE WITH KINECT AND THE SPECLE PATTERN
-	
+
+
 \begin{comment}
+
 WIKIPEDIA:
 
 
@@ -186,11 +201,6 @@ A faster and more versatile method is the projection of patterns consisting of m
 Although many other variants of structured light projection are possible, patterns of parallel stripes are widely used. The picture shows the geometrical deformation of a single stripe projected onto a simple 3D surface. The displacement of the stripes allows for an exact retrieval of the 3D coordinates of any details on the object's surface.
 
 
-\begin{figure}[H]
-\centering
-\includegraphics[scale=0.5]{structure}
-\caption{Stereo vision}
-\end{figure}
 
 Two major methods of stripe pattern generation have been established: Laser interference and projection.
 
@@ -243,7 +253,7 @@ Feature/Technique                                                               
 \multicolumn{1}{r|}{\cellcolor[HTML]{EFEFEF}Accurracy}                                                       & \multicolumn{1}{c|}{\cellcolor[HTML]{EFEFEF}mm, cm}                                                              & \multicolumn{1}{c|}{\cellcolor[HTML]{EFEFEF}mm, cm}                                                                  & \SI{}{\micro\meter}, cm                                                                    \\
 \multicolumn{1}{r|}{Scanning speed}                                                                          & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Medium - limited by\\  software complexity\end{tabular}}         & \multicolumn{1}{c|}{\begin{tabular}[c]{@{}c@{}}Fast - limited by \\ sensor speed\end{tabular}}                       & \begin{tabular}[c]{@{}c@{}}Fast - limited by\\  camera speed\end{tabular} \\ \bottomrule
 \end{tabular}
-\caption {Qualitative comparison of depth acquisition techniques [2]}
+\caption {Qualitative comparison of depth acquisition techniques \cite{titof}}
 
 \label{tab:depthcompar}
 % 2 - http://www.ti.com/ww/en/analog/3dtof/index.shtml?DCMP=hpa_contributed_article&HQS=3dtof-ca
@@ -272,7 +282,7 @@ Interface            & USB2.0/ 3.0                                              
 \hline
 Dimensions           &  18 x 3.5 x 5 cm  \\ \hline
 \end{tabular}
-\caption{Asus Xtion Pro Live specification}
+\caption{Asus Xtion Pro Live specification \cite{ASUS}}
 \label{tab:asus}
 \end{center}
 \end{table}

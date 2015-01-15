@@ -141,7 +141,7 @@ Mobile platform & VGA (640x480) \\
 
 The next step in the construction of the MMS robot required a selection of hardware components, such as the actuators, power supply, embedded computing units and control electronics. The Figure \ref{fig:hardware} presents a categorized diagram of the selected elements. 
 
-The MMS robot utilises two types of actuators, four DC motors for each of the mobile platform wheels and the servomechanisms for manipulator joints. The selected DC motors are the Pololu 1444 [datasheet] with 50:1 metal gearboxes. They achieve \SI{200}{RPM} of no-load speed and \SI{12}{\kilogram \centi\metre} of stall current. Additionally, they possess 64 CPR encoders, which multiplied by the gear ratio provide a total of 3200 counts per revolution. The type of servomechanism used for each joint, is the Turnigy 1269HV [datasheet], with titanium gears and a total stall torque of \SI{21}{\kilogram \centi\metre}. Both types of actuators are driven by the Pulse Width Modulation signal (PWM). In case of the DC motors, the PWM signal is provided by a dedicated motor driver board, named Rover 5 [datasheet]. This controller provides four low-resistance FET H-bridges, together with current monitoring on each motor channel. To generate the PWM signal for servomechanisms positioning, a 16-channel PWM driver chip, the PCA9685 [datasheet] was used. This driver has an I2C interface for setting a PWM signal on a selected channel with a 12-bit resolution.
+The MMS robot utilises two types of actuators: four DC motors for each of the mobile platform wheels and the servomechanisms for manipulator joints. The selected DC motors type is the Pololu 1444 [datasheet] with 50:1 metal gearboxes. They achieve \SI{200}{RPM} of no-load speed and \SI{12}{\kilogram \centi\metre} of stall current. Additionally, they possess 64 CPR encoders, which multiplied by the gear ratio provide a total of 3200 counts per revolution. The type of servomechanism used for each joint, is the Turnigy 1269HV [datasheet], with titanium gears and a total stall torque of \SI{21}{\kilogram\centi\metre}. Both types of actuators are driven by the Pulse Width Modulation signal (PWM). In case of the DC motors, the PWM signal is provided by a dedicated motor driver board, named Rover 5 [datasheet]. This controller provides four low-resistance FET H-bridges, together with current monitoring on each motor channel. To generate the PWM signal for servomechanisms positioning, a 16-channel PWM driver chip, the PCA9685 [datasheet] was used. This driver has an I2C interface for setting the PWM frequency and duty cycle on a selected channel with a 12-bit resolution.
 
 \tikzset{
   basic/.style  = {draw, font=\sffamily, font=\footnotesize, rectangle,text centered, minimum size=2.2cm,minimum height=0.5cm},
@@ -186,7 +186,8 @@ The MMS robot utilises two types of actuators, four DC motors for each of the mo
 \node [below of = c42, yshift=6pt] (c43) {Battery monitor};
 
 
-\node [below of = c5, xshift=15pt] (c51) {Asus Xtion sensor};
+\node [below of = c5, xshift=15pt] (c51) {USB WiFi adapter\\
+TP-LINK WN722N};
 \end{scope}
 
 % lines from each level 1 node to every one of its "children"
@@ -210,9 +211,9 @@ The MMS robot utilises two types of actuators, four DC motors for each of the mo
 \label{fig:hardware}
 \end{figure}
 
-The main computing unit, used for hosting the control server and directly interfacing with the actuator drivers, is the model B of Raspberry Pi development platform [datasheet]. This board is equipped with 700Mhz ARM11 family CPU, 512 MB of RAM and a set of GPIO ports with hardware UART, I2C and SPI interfaces. The MMS robot utilises an additional processing unit, with a much larger computing power for the vision system implementation. The NVIDIA Jetson TK1 [datasheet] development board is based on the Tegra K1 System-on-Chip, that includes a quad-core 2.3 GHz ARM Cortex-A15 CPU, 2 GB of RAM, and a NVIDIA Kepler GPU with 192 CUDA cores, capable of performing over 300 GFLOPS of 32-bit floating point computations. This board provides a similar performance to a modern desktop GPU, while maintaining relatively low power consumption, which makes it a perfect match for image processing applications in mobile systems, such as the MMS robot.
+The main computing unit, used for hosting the control server and directly interfacing with the actuator drivers, is the model B of Raspberry Pi development platform [datasheet]. This board is equipped with 700Mhz ARM11 family CPU, 512 MB of RAM and a set of GPIO ports with hardware UART, I2C and SPI interfaces. The MMS robot utilises an additional processing unit, with a much larger computing power for the vision system implementation. The NVIDIA Jetson TK1 [datasheet] development board is based on the Tegra K1 System-on-Chip, that includes a quad-core 2.3 GHz ARM Cortex-A15 CPU, 2 GB of RAM, and a NVIDIA Kepler GPU with 192 CUDA cores, capable of performing over 300 GFLOPS of 32-bit floating point computations. This board provides a similar performance to a modern desktop GPU, while maintaining relatively low power consumption, which makes it a perfect match for image processing applications in mobile systems, such as the MMS robot. \textbf{Network setup.}
 
-The whole system is powered by a lithium-polymer, 8 cell battery with a nominal voltage of \SI{29.6}{\volt} and a capacity of \SI{5.8}{\ampere\hour}. Due to the specific nature of a lithium-polymer battery, each of its cells has to be protected against excessive discharge. For this purpose, a cell voltage monitor is connected to the battery, which generates a sound alarm if the voltage falls below a selected threshold. To integrate different operating voltages for the individual components, three DC-DC voltage converters are applied in the power system: one with \SI{6}{\volt} output and maximal current of \SI{20}{\ampere} for supplying all of the actuators, one with the output of \SI{12}{\volt} and \SI{4}{\ampere} max. for the NVIDIA Jetson board, and a \SI{5}{\volt} and \SI{4}{\ampere} max. for feeding the Raspberry Pi and the actuator drivers.
+The whole system is powered by a lithium-polymer, 8 cell battery with a nominal voltage of \SI{29.6}{\volt} and capacity of a \SI{5.8}{\ampere\hour}. Due to the specific nature of a lithium-polymer battery, each of its cells has to be protected against excessive discharge. For this purpose, a cell voltage monitor is connected to the battery and generates a sound alarm if the voltage falls below a selected threshold. To integrate different operating voltages for the individual components, three DC-DC voltage converters are applied in the power system: one with \SI{6}{\volt} output and maximal current of \SI{20}{\ampere} for supplying all of the actuators, one with the output of \SI{12}{\volt} and \SI{4}{\ampere} max. for the NVIDIA Jetson board, and a \SI{5}{\volt} and \SI{4}{\ampere} max. for feeding the Raspberry Pi and the actuator drivers.
 
 The final construction result in the form of the whole, assembled MMS robot is  is presented in the Figure \ref{fig:assembled}.
 
@@ -226,6 +227,8 @@ The final construction result in the form of the whole, assembled MMS robot is  
 
 \section{Software architecture}
 \label{sec:soft}
+
+The final stage of the MMS robot construction, after the selection and assembly of the hardware layer, was to implement software that would allow for remote control over the system actuators, including manipulator joint positioning and setting the velocity and direction for each motor. To fulfil all of the preset requirements, a HTTP control server providing a web services interface has been created on the Raspberry Pi platform. The flow of information in such system is presented in the Figure \ref{fig:softdesign}.
 
 %http://www.texample.net/tikz/examples/data-flow-diagram/
 \begin{figure}[H]
@@ -255,9 +258,33 @@ The final construction result in the form of the whole, assembled MMS robot is  
 
 \end{tikzpicture}
 
-\caption{Software architecture}
+\caption{Data flow between the MMS robot components}
 
 \label{fig:softdesign}
 
 \end{center}
 \end{figure}
+
+A Representational State Transfer (REST) software architecture design pattern was used during the implementation of the control server. In this approach, the HTTP methods like GET or POST, which are typically used by the web browsers, serve as the communication interface between different devices. The web service API, that conforms to the REST pattern is composed of a base uniform resource identifier (URI) followed by a path to a given resource. In case of the MMS robot, the base URI has the form of: \textit{http://ip:port/Robot/}. A list of example request supported by the implemented web service is presented in the Table \ref{tab:rest}. The control server was developed in the Python programming language, with the use of the Webiopi [??] Internet of Things framework. The Webiopi provides a convenient set of tools to share the peripherals of the Raspberry Pi development platform via the HTTP interface, compatible with the REST architecture.
+
+
+\begin{table}[H]
+
+\begin{center}
+
+\begin{tabular}{r||l}
+\hline
+Position of the manipulator \textit{id} \\
+
+\hline
+Position of the manipulator \textit{id}        & \SI{58}{\degree H}, \SI{45}{\degree V}, \SI{70}{\degree D} \\
+
+\hline
+Position of the manipulator \textit{id} & VGA (640x480) \\
+
+\hline
+\end{tabular}
+\caption{Example HTTP requests}
+\label{tab:rest}
+\end{center}
+\end{table}
