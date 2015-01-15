@@ -1,7 +1,7 @@
 \chapter{Analysis of the depth data}
 \label{cha:analysis}
 
-The acquired depth information can be stored in computer memory in two ways. The first is the depth map, which takes the form of a two dimensional array, similarly to the plain gray-scale image. In this case, however, the depth measurement is stored in place of the color intensity. Depth map is the simplest way to represent and store the acquired depth of the scene and it is usually obtained directly from the sensor driver. The main disadvantage of a depth map is its inflexibility. This representation is strictly bound to the camera point of view and thus it is inconvenient in further processing. 
+The acquired depth information can be stored in computer memory in two ways. The first is the depth map, which takes the form of a two dimensional array, similarly to a plain gray-scale image. In this case, however, the depth measurement is stored in place of the color intensity. Depth map is the simplest way to represent and store the acquired depth of the scene and it is usually obtained directly from the sensor driver. The main disadvantage of a depth map is its inflexibility. This representation is strictly bound to the camera point of view and, thus, it is inconvenient in further processing. 
 
 The second representation of a scene's depth information is a point cloud. Generally speaking, it is a set of data points in some coordinate system. Typically, the Cartesian system is used and the points are defined by their x, y and z coordinates. Point clouds are derived from depth maps and offer new capabilities, such as viewpoint transformation or cloud concatenation. The point cloud representation can be rendered in the three dimensional space, which is particularly useful tool during the implementation of the system for depth data analysis. 
 
@@ -85,15 +85,15 @@ A frequently used operation during the processing of a point cloud is the affine
 %Info from pcl tutorials.
 
  One of the most important stages of data preprocessing is the filtration. Probably the most basic point cloud filter is the pass-through filter, which reject all points outside a given range along a specified dimension. This procedure allows to focus the analysis process on the region of interest, i.e. the reachable workspace of a manipulator. Apart from limiting the cloud dimensions, the number of data points can be also reduced by downsampling. The voxel grid filter is typically used for this purpose. This filter creates a three dimensional regular grid over the input point cloud data and then, in each voxel, approximates all the present data points with their centroid. Such reduction is particularly useful when large point cloud datasets have to be processed online with limited computing resources. Finally, the filtration process has to cope with numerous measurement errors present in the raw data acquired from the 3D camera. Such measurement noise 
-manifests itself in the form of sparse outliers, which corrupt the results of further processing, i.e. the surface normals estimation. The impact of those irregularities can by reduced by applying an outlier removal filter. The simplest form of such filter rejects all the data points which does not have enough neighbours within a specified radius. A more refined version is based on the neighbouring points distance distribution. Firstly, the mean distance from each point to all its neighbours is calculated. Next, based on the assumption that the resulting distribution is Gaussian, all the points whose mean distances lay outside of an interval defined by the global distances mean and their standard deviation are rejected from the dataset. The effects of statistical outlier removal are presented in the Figure 222.
+manifests itself in the form of sparse outliers, which corrupt the results of further processing, i.e. the surface normals estimation. The impact of those irregularities can by reduced by applying an outlier removal filter. The simplest form of such filter rejects all the data points which does not have enough neighbours within a specified radius. A more refined version is based on the neighbouring points distance distribution. Firstly, the mean distance from each point to all its neighbours is calculated. Next, based on the assumption that the resulting distribution is Gaussian, all the points whose mean distances lay outside of an interval defined by the global distances mean and their standard deviation are rejected from the dataset. The effects of statistical outlier removal are presented in the Figure \ref{fig:outlierremoval}.
 
 The point cloud segmentation or cluster extraction is the process of grouping together data points that meet some common condition of similarity. Ideally, each of such segmented clusters represents a different object in the scene. A popular segmentation method is based on the euclidean distance. In this approach, two points are considered to belong to the same cluster, if their relative distance is less than a selected threshold. This process is similar to the flood-fill algorithm, popular in the 2D image processing. There are also other varieties of segmentation, i.e. based on the smoothness constraint or colour similarity.
 
 \begin{figure}[H]
-\label{fig:outlierremoval}
 \centering
 \includegraphics[width=0.9\textwidth]{fig/statistical_removal}
 \caption{Statistical outlier removal [tutorials]}
+\label{fig:outlierremoval}
 \end{figure}
 
 %Info from Rusu dissertation
@@ -134,7 +134,7 @@ The main advantage of the RANSAC algorithm is the robust estimation. This method
 \section{Descriptors for object recognition}
 \label{sec:descriptors}
 
-Surface normals are the most basic representation of the geometry around a certain point. Even if coupled with surface curvature, they usually does not provide enough descriptive information for object recognition and pose estimation. To achieve better performance in such tasks, more complex and higher dimensional descriptors have been proposed in the literature \cite{descriptorssummary}. A descriptor is considered to be good if it is able to capture the same surface characteristics, regardless of rigid transformations, varying sampling density and noise. In general, 3D shape descriptors a divided into local and global. The former describe only the local geometry around a query point, while the latter represent the geometry of a whole object. A few selected descriptors are presented further in this section.
+The object recognition, which involves the identification and localization of a given 3D object in the environment, is a major problem and limitation during the execution of autonomous manipulation tasks. Most of the 3D recognition methods base on some surface characteristics indicators, called features or descriptors. Surface normals are the most basic representation of the geometry around a certain point. Even if coupled with surface curvature, they usually does not provide enough descriptive information for object recognition and pose estimation. To achieve better performance in such tasks, more complex and higher dimensional descriptors have been proposed in the literature \cite{descriptorssummary}. A descriptor is considered to be reliable if it is able to capture the same surface characteristics, regardless of rigid transformations, varying sampling density and noise. In general, 3D shape descriptors are divided into local and global. The former describe only the local geometry around a query point, while the latter represent the geometry of the whole object. A few selected descriptors are presented further in this section.
 
 The Point Feature Histogram (PFH) \cite{rusuthesis} is a generalization of both surface normals and curvature estimates. It represents the relative orientation of normals between every point pair $(p_i,p_j)$ in the neighbourhood of the query point $p_q$. For each point pair, using the surface normal $n_i$ at $p_i$, a new coordinate frame $u,v,w$ is constructed as follows:
 \begin{equation}
@@ -165,6 +165,8 @@ A further extension of the FPFH descriptor is the Viewpoint Feature Histogram (V
 
 \section{Object recognition pipeline}
 \label{sec:pipeline}
+
+After computing the descriptors of the input cloud, the task of object recognition can be accomplished by matching  them with some classified training set. This training set is obtained on the basis of a object model, acquired i.e. by 3D scanning in a controlled environment. The local and global descriptors require two distinct approaches to the training model fitting procedure. The Figure \ref{fig:objpipe} presents complete processing pipelines for both types of descriptors, as proposed in \cite{AldomaMTWPZRGV12}.
 
 \begin{figure}[H]
 \begin{center}
@@ -197,3 +199,11 @@ A further extension of the FPFH descriptor is the Viewpoint Feature Histogram (V
 
 \end{center}
 \end{figure}
+
+In case of the local descriptors, the first stage of processing, is the extraction of key-points, that are characteristic points in which the features are further computed. The simplest approach to this step is to just downsample the input data, i.e. by a voxel grid filter. For the selected points, the local descriptors are then computed and matched with their closest correspondences in the training set, which results in a set of correspondence pairs. In the next phase, those pairs are grouped according to the geometric constrains of a rigid transformation and too small subsets are discarded. Two point pairs $(p_i, q_i)$ and $(p_j, q_j)$ are considered to be geometrically consistent, if, i.e., they meet the following relation:
+$$ \left|\left\|p_i - p_j\|_2-\|q_i - q_j\right\|_2\right| < \epsilon $$
+where $p$ and $q$ represent the model and the scene points, and $\epsilon$ is a given threshold. By applying the grouping step, a large number of the false correspondences is discarded. To finalize the recognition process, the transformation matrix parameters are estimated, i.e. using the RANSAC algorithm, to further reduce the number of inconsistent correspondences and return the absolute orientation of the object.
+
+As it comes to global descriptors, the whole process is preceded by a segmentation phase, in order to extract individual objects in the scene. Next, for each cluster, a global descriptor is computed and compared to the training set elements, from which its closest neighbours are selected. The position of the object is then obtained by aligning the clusters centroids and the viewpoint information encoded in the descriptor, allows to retrieve the objects rotation.
+
+The final two post-processing steps of both pipelines are intended to refine the recognition outcome. By applying the Iterative Closest Point (ICP) algorithm, which minimises the difference between two point clouds \cite{icpwiki}, the accuracy of the object position and orientation is improved. The hypothesis verification step aims to reduce the number of false positives of recognition. An example strategy for this step is presented in \cite{hipoveri} and is based on the number of inliers in the recognised cluster. 
