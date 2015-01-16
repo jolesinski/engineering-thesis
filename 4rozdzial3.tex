@@ -1,12 +1,12 @@
 \chapter{Analysis of the depth data}
 \label{cha:analysis}
 
-The acquired depth information can be stored in computer memory in two ways. The first is the depth map, which takes the form of a two dimensional array, similarly to a plain gray-scale image. In this case, however, the depth measurement is stored in place of the color intensity. Depth map is the simplest way to represent and store the acquired depth of the scene and it is usually obtained directly from the sensor driver. The main disadvantage of a depth map is its inflexibility. This representation is strictly bound to the camera point of view and, thus, it is inconvenient in further processing. 
+The acquired depth information is stored in computer memory in two ways. The first is a depth map, which takes the form of a two dimensional array, similarly to a plain gray-scale image. In this case, however, the depth measurement is stored in place of the color intensity. Depth map is the simplest way to represent and store the acquired depth of the scene and it is usually obtained directly from the sensor driver. The main disadvantage of a depth map is its inflexibility. This representation is strictly bound to the camera point of view and, thus, it is inconvenient in further processing. 
 
-The second representation of a scene's depth information is a point cloud. Generally speaking, it is a set of data points in some coordinate system. Typically, the Cartesian system is used and the points are defined by their x, y and z coordinates. Point clouds are derived from depth maps and offer new capabilities, such as viewpoint transformation or cloud concatenation. The point cloud representation can be rendered in the three dimensional space, which is particularly useful tool during the implementation of the system for depth data analysis. 
+The second representation of a scene's depth information is a point cloud. Generally speaking, it is a set of data points in some coordinate system. The Cartesian system is typically used and the points are defined by their x, y and z coordinates. Point clouds are derived from depth maps and offer new capabilities, such as viewpoint transformation or cloud concatenation. The point cloud representation can be rendered in the three dimensional space, which is a particularly useful tool during the implementation of the system for depth data analysis. 
 
 
-In order to achieve the autonomous operation of the robot, a set of tools for efficient processing and analysis of the collected data about the environment structure must be established. The following sections present the main tools used further in the implementation of the autonomous control mode for the MMS robot.
+In order to achieve the autonomous operation of the robot, a set of tools for efficient processing and analysis of the collected data about the environment structure must be established. The following sections present the main operations used further in the implementation of the autonomous control mode for the MMS robot.
 
 
 
@@ -92,7 +92,7 @@ The point cloud segmentation or cluster extraction is the process of grouping to
 \begin{figure}[H]
 \centering
 \includegraphics[width=0.9\textwidth]{fig/statistical_removal}
-\caption{Statistical outlier removal [tutorials]}
+\caption{Statistical outlier removal \cite{pcl}}
 \label{fig:outlierremoval}
 \end{figure}
 
@@ -102,11 +102,11 @@ Many of the algorithms used further during the analysis of a point cloud base on
 \begin{equation} 
 \bar{p} = \frac{1}{k} \cdot \sum\limits_{i=1}^{k} p_i 
 \end{equation}
-The tangent plane is thereafter defined by the centroid $\bar{p}$ and the sought normal vector $\vec{n}$. The latter is computed by minimizing the total (squared?) distance from every k-neighbour $p_i$ to the tangent plane, given by $\sum\limits_{i=1}^{k} (p_i - \bar{p})\cdot \vec{n}$. The minimization problem can be solved by utilizing the covariance matrix $C \in \mathbb{R}^{3x3}$, given by:
+The tangent plane is thereafter defined by the centroid $\bar{p}$ and the sought normal vector $\vec{n}$. The latter is computed by minimizing the total distance from every k-neighbour $p_i$ to the tangent plane, given by $\sum\limits_{i=1}^{k} (p_i - \bar{p})\cdot \vec{n}$. The minimization problem can be solved by utilizing the covariance matrix $C \in \mathbb{R}^{3x3}$, given by:
 \begin{equation}
 C = \frac{1}{k}\sum\limits_{i=1}^{k}(p_i - \bar{p})\cdot (p_i - \bar{p})^\intercal
 \end{equation}
-The covariance matrix $C$ is symmetric, positive semi-definite and possess three real eigenvalues $\lambda_j \geq 0, i = 1,2,3$. The eigenvector corresponding to the smallest eigenvalue is an approximation of the desired normal vector $\vec{n}$, disregarding the sign. Furthermore, if the viewpoint $v_p$ is known, the normal $\vec{n}$ has to be oriented towards  $v_p$, which means that it has to satisfy the equation:
+The covariance matrix $C$ is symmetric, positive semi-definite and possess three real eigenvalues $\lambda_j \geq 0, i = 1,2,3$. The eigenvector corresponding to the smallest eigenvalue is an approximation of the desired normal vector $\vec{n}$, disregarding the sign. Furthermore, if the viewpoint $v_p$ is known, the normal $\vec{n}$ has to be oriented towards  $v_p$, which means that it has to satisfy the condition:
 \begin{equation}
 \vec{n}\cdot(v_p-p_i) > 0
 \end{equation}
@@ -153,7 +153,6 @@ FPFH(p_q) = SPFH(p_q) + \frac{1}{k}\sum\limits_{i=1}^k\frac{1}{w_i}SPFH(i)
 \end{equation}
 where $w_i$ is a distance between $p_q$ and $p_k$ in some metric space. The FPFH descriptor reduces the computational complexity of the PFH to $O(nk)$, while maintaining similar descriptive performance.
 
-Figure: Influence diagrams
 
 A further extension of the FPFH descriptor is the Viewpoint Feature Histogram (VFH). It is a global type of descriptor, resulting in only one histogram for a given cloud. The VFH utilises the viewpoint $p_v$ vector direction to add viewpoint variance to the FPFH. In this case, the angles $\alpha, \phi, \theta$ from \ref{eq:angularfeat} are computed between the entire point cloud centroid $p_c$ and each of the points and binned into a histogram. This signature is further extended by a viewpoint component - a histogram of the angles between each of the points and the normalized viewpoint direction vector $\frac{p_c - p_v}{\|p_c - p_v\|}$. The main advantage of the VFH is its computational efficiency, with complexity of $O(n)$. Furthermore, this descriptor encodes the objects surface within a single histogram, which makes it convenient to test for similarity between the given point clusters.
 %PFH, FPFH, SHOT,	Keypoint extraction, VFH
@@ -204,6 +203,6 @@ In case of the local descriptors, the first stage of processing, is the extracti
 $$ \left|\left\|p_i - p_j\|_2-\|q_i - q_j\right\|_2\right| < \epsilon $$
 where $p$ and $q$ represent the model and the scene points, and $\epsilon$ is a given threshold. By applying the grouping step, a large number of the false correspondences is discarded. To finalize the recognition process, the transformation matrix parameters are estimated, i.e. using the RANSAC algorithm, to further reduce the number of inconsistent correspondences and return the absolute orientation of the object.
 
-As it comes to global descriptors, the whole process is preceded by a segmentation phase, in order to extract individual objects in the scene. Next, for each cluster, a global descriptor is computed and compared to the training set elements, from which its closest neighbours are selected. The position of the object is then obtained by aligning the clusters centroids and the viewpoint information encoded in the descriptor, allows to retrieve the objects rotation.
+As it comes to global descriptors, the whole process is preceded by a segmentation phase, in order to extract individual objects in the scene. Next, for each cluster, a global descriptor is computed and compared to the training set elements, from which its closest neighbours are selected. The position of the object is then obtained by aligning the clusters centroids and the viewpoint information encoded in the descriptors.
 
 The final two post-processing steps of both pipelines are intended to refine the recognition outcome. By applying the Iterative Closest Point (ICP) algorithm, which minimises the difference between two point clouds \cite{wikipedia}, the accuracy of the object position and orientation is improved. The hypothesis verification step aims to reduce the number of false positives of recognition. An example strategy for this step is presented in \cite{hipoveri} and is based on the number of inliers in the recognised cluster. 

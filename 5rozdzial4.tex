@@ -1,14 +1,14 @@
 \chapter{Implementation and testing}
 \label{cha:implandtest}
 
-A MMS robot equipped with a depth acquisition system is a particularly well suited tool to perform tasks with a high degree of autonomy. The high volume of environmental information provided by a depth sensor allows the robot to successfully operate in an unstructured and changing environment without human guidance. In this work, the task which the robot has to solve fully autonomously is the problem of finding a predefined object in its working environment. This problem required implementing two mechanisms for depth data processing. The first was the detection of obstacles, in order to ensure save movement of the mobile platform and the second one was the recognition of the object to accomplish the final task. The Point Cloud Library (PCL) \cite{Rusu_ICRA2011_PCL, pcl} was used to implement the depth data analysis on the robot. PCL is an open source project for 3D point cloud processing. The library contains a vast array of state-of-the-art algorithms for filtering, feature estimation, segmentation, registration and model fitting. Apart from the PCL, the OpenMP \cite{openmp} library for multithreading and the FLANN \cite{flann} library for approximate nearest neighbours are utilised in the project. A detailed description of the developed autonomous control mode is provided in the following sections.
+A MMS robot equipped with a depth acquisition system is a particularly well suited tool to perform tasks with a high degree of autonomy. The high volume of environmental information provided by a depth sensor allows the robot to successfully operate in an unstructured and changing environment without human guidance. In this work, the task which the robot has to solve fully autonomously is the problem of finding a predefined object in its working environment. This problem required implementing two mechanisms for depth data processing. The first was the detection of obstacles, in order to ensure save movement of the mobile platform and the second one was the recognition of the object to accomplish the final task. The Point Cloud Library (PCL) \cite{Rusu_ICRA2011_PCL, pcl} was used to implement the depth data analysis on the robot. PCL is an open source project for 3D point cloud processing. The library contains a vast array of state-of-the-art algorithms for filtering, feature estimation, segmentation, registration and model fitting. Apart from the PCL, the OpenMP \cite{openmp} library for multithreading functionality and the FLANN \cite{flann} library for approximate nearest neighbours algorithm are utilised in the project. A detailed description of the developed autonomous control mode is provided in the following sections.
 
 %---------------------------------------------------------------------------
 
 \section{Hardware setting}
 \label{sec:setting}
 
-The first issue encountered during the development of the autonomous mode was adequate positioning of the depth camera. As mentioned in section \ref{sec:3dsum}, the selected RGB-D sensor, Asus Xtion Pro operating range starts from $0.8m$. In practice, however, the sensor starts to return proper measurements at a distance of $0.5m$, which is still a relatively high value compared to the dimensions of the whole robot. For this reason, the camera position and field of view determines the size of objects that can be used as targets. Moreover, the RGB-D camera location is also crucial during obstacle detection. The system should be able to determine whether it is possible to displace an entire width of the platform forward. While moving ahead, the analysed area is desired to be large enough that the robot could react to obstacle on time and avoid collision. The region close to the front of the platform should also be examined, as obstacles are likely to occur there during platform rotation.
+The first issue encountered during the development of the autonomous mode was adequate positioning of the depth camera. As mentioned in section \ref{sec:3dsum}, the selected RGB-D sensor, Asus Xtion Pro operating range starts from $0.8m$. In practice, however, the first proper measurements are returned from a distance of $0.5m$, which is still a relatively high value compared to the dimensions of the whole robot. For this reason, the camera position and field of view determines the size of objects that can be used as targets. Moreover, the RGB-D camera location is also crucial during obstacle detection. The system should be able to determine whether it is possible to displace an entire width of the platform forward. While moving ahead, the analysed area is desired to be large enough that the robot could react to obstacle on time and avoid collision. The region close to the front of the platform should also be examined, as obstacles are likely to occur there during platform rotation.
 
 The mounting point of the RGB-D camera has been selected in place of an end-effector of the larger manipulator. This setting has allowed for reproducible and convenient adjustments of the camera pose. The Figure \ref{fig:fov} presents a simplified view of camera setting relative to the mobile platform. The manipulator is positioned in the plane compliant with the drawing and only the joints relevant to this plane are specified. The joint angles $\theta_1, \theta_2, \theta_3$ were experimentally selected to meet the previously specified field of view requirements. In such setting, the robot is able to perceive the full dimensions of small sized objects, such as a coffe mug, which is sufficient for further processing purposes.
 
@@ -44,13 +44,29 @@ Knowledge of the camera field of view facilitates the first stage of depth data 
 \end{center}
 \end{figure}
 
-Depth sensors provide a high volume of information, which has to be analysed online with a limited computing resources. Therefore, the first processing step was to reduce the amount of data by downsampling. For this purpose, a voxel filter with a leaf size of $1cm \times 1cm \times 1cm$ has been applied. Figure x illustrates an exemplary point cloud before and after filtration. Due to the reduced number of points, this step has significantly accelerated further processing stages, thus allowing a sufficiently fast response to obstacle emergence.
+Depth sensors provide a high volume of information, which has to be analysed online with a limited computing resources. Therefore, the first processing step was to reduce the amount of data by downsampling. For this purpose, a voxel grid filter with a leaf size of $1cm \times 1cm \times 1cm$ has been applied. Due to the reduced number of points, this step has significantly accelerated further processing stages, thus allowing to generate sufficiently fast response on obstacle emergence.
 
-FIGURE
 
-By design, the robot is intended to work in the indoor environment. A significant feature of such environment is the planar surface of the floor. Therefore, by fitting a plane model to the acquired point cloud, it is possible to determine the  area belonging to the ground, and thus free of obstacles. The RANSAC algorithm implementation, available in the PCL library, was used to estimate the plane model parameters $A,B,C,D$, given by Equation \ref{eq:planemodel}. Dobrane parametry? After the fitting, all of the model inliers are removed from the point cloud. This step thus leaves only the points that potentially belong to an obstacle. On the other hand, if the RANSAC algorithm fails to fit the model, it is assumed that the entire view is occluded by obstacles and the procedure returns positive detection.  The Figure x illustrates the point cloud from Figure x after plane model extraction.
+By design, the robot is intended to work in the indoor environment. A significant feature of such environment is the planar surface of the floor. Therefore, by fitting a plane model to the acquired point cloud, it is possible to determine the  area belonging to the ground, and thus free of obstacles. The RANSAC algorithm implementation, available in the PCL library, was used to estimate the plane model parameters $A,B,C,D$, given by Equation \ref{eq:planemodel}. 
+The maximum iterations of the algorithm are set to $1000$, and distance threshold between the point and the model is set to $1cm$. After the fitting, all of the model inliers are removed from the point cloud. This step thus leaves only the points that potentially belong to an obstacle. On the other hand, if the RANSAC algorithm fails to fit the model, it is assumed that the entire view is occluded by obstacles and the procedure returns positive detection.  The Figure \ref{fig:floorcut} illustrates an example of plane model extraction.
 
-FIGURE
+\begin{figure}
+\centering
+\begin{subfigure}{.3\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{fig/floorcut1}
+  \caption{Input point cloud}
+  \label{fig:sub1}
+\end{subfigure}%
+\begin{subfigure}{.3\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{fig/floorcut2}
+  \caption{Plane extraction result}
+  \label{fig:sub2}
+\end{subfigure}
+\caption{An example of floor extraction for a mug}
+\label{fig:floorcut}
+\end{figure}
 
 The next processing step, the volume of interest (VoI) extraction, involves separation of a cuboidal space from the remaining point cloud. The dimensions of the extracted cuboid directly correspond to the total height and width of the robot, and the maximum distance at which the system is supposed to react to obstacles. As shown in Figure \ref{fig:fov}, the camera is pointing to the floor at a certain angle. This direction is represented by a Z-axis of the coordinate system in the acquired point cloud. To enable the VoI extraction with the specified dimensions, the coordinate system of the cloud is rotated by an angle $\theta$ around the X-axis, such that the Z-axis of the resultant coordinate frame is parallel to the floor. This transformation can be based on the angle $\theta_1 - \theta_2 - \theta_3$, from Section \ref{sec:setting}. However, because of the vibrations caused by the platform movement, a more accurate solution is to use the previously calculated plane model. A vector $\vec{n}$ normal to a plane \ref{eq:planemodel} is given by:
 \begin{equation}
@@ -62,7 +78,7 @@ C\\
 \end{array}
 \right] 
 \end{equation}
-It can be shown, that the third coordinate $n_z$ of the normal vector $\vec{n}$ satisfies $n_z = sin(\theta)$ and the final rotation matrix is given by:
+The third coordinate $n_z$ of the normal vector $\vec{n}$ satisfies $n_z = sin(\theta)$ and the final rotation matrix is given by:
 
 \begin{equation}
 R_x=\left[\begin{array}{ccc}
@@ -71,9 +87,10 @@ R_x=\left[\begin{array}{ccc}
       0 & n_z & \sqrt{1 - n_z^2}  \\
     \end{array}\right]
 \end{equation}
-After viewpoint transformation, the VoI is extracted by applying a Passthrough filter along X, Y and Z axes of the received cloud. The filtration ranges have been experimentally selected...
+After viewpoint transformation, the VoI is extracted by applying a Passthrough filter along X and Z axes of the received cloud. The filtration ranges have been experimentally selected to $[-0.3m, 0.3m]$ along the X axis, which corresponds to the robot width, and $[0m, 0.55m]$ along the Z axis, which represent the maximal obstacle distance.
 
-The last stage of the obstacle detection processing is the outlier removal.  
+The last stage of the obstacle detection processing is the outlier removal. The RadiusOutlierRemoval class from PCL is utilised for this purpose. The search radius of this filter is selected to $r = 10cm$, and the number of $r$-neigbours, below which the query point is considered as an outlier, is set to $10$. Such setting allows to reduce the number of noise in the point cloud and the final result of obstacle detection is then based the remaining number of points. If the processed point cloud contains more than $50$ points, a positive obstacle detection is returned. This threshold allows to successfully detect small objects, such as a box of matches, while discarding all of the remaining measurement errors.
+
 	
 
 %---------------------------------------------------------------------------
@@ -81,19 +98,19 @@ The last stage of the obstacle detection processing is the outlier removal.
 \section{Object recognition implementation}
 \label{sec:detection}
 
-In addition to ensuring safe movement of the robot, previously described obstacle  detection pipeline also performs most of the necessary preprocessing steps for object recognition. Upon obstacle detection, the resulting point cloud contains points that belong only to the objects in the scene, thus further processing is directly applied to that cloud. 
+In addition to ensuring safe movement of the robot, the previously described obstacle  detection pipeline also performs most of the necessary preprocessing steps for object recognition. Upon obstacle detection, the resulting point cloud contains points that belong only to the objects in the scene, thus further processing is directly applied to that cloud. 
 
 Two different approaches of object recognition were implemented during the project. The first one uses an analytical model of the objects shape and allows to recognize objects with simple geometric structures, such as spheres or cylinders. The second, more general method is based on the objects detailed model, acquired during 3D scanning. Despite the differences, both of these approaches share some common preprocessing steps, including the normal estimation and cluster segmentation. To determine the normal vectors for a given cloud, the NormalEstimationOMP class, available in PCL library, is used. This class exploits the OpenMP library to parallelize computations, which significantly accelerates the process of normal estimation. 
 
-	It is assumed that during the exploration of the environment, the robot can encounter a scene with multiple objects. In such situation, it is convenient to isolate individual items and analyse them separately. For this purpose, a greedy algorithm of Euclidean Cluster Extraction is applied to the point cloud. The parameters of the algorithm were experimentally chosen, to match the size of individual clusters with objects used as targets. VALUES. The last parameter, due to the nature of the euclidean segmentation, imposes a minimal distance of $10cm$ between object surfaces. As a result of the segmentation process, a vector of point clouds is obtained and further analysis is applied to each of its elements.
+	It is assumed that during the exploration of the environment, the robot can encounter a scene with multiple objects. In such situation, it is convenient to isolate individual items and analyse them separately. For this purpose, a greedy algorithm of Euclidean Cluster Extraction is applied to the point cloud. The cluster tolerance is set to $5cm$. This parameter, due to the nature of the euclidean segmentation, imposes a minimal distance of $5cm$ between object surfaces. As a result of the segmentation process, a vector of point clouds is obtained and further analysis is applied to each of its elements.
 	
 	In case of the first, geometric primitives based approach, the model fitting is performed directly on the point clouds obtained after the segmentation. The SACSegmentationFromNormals class from PCL library is used during the fitting process. In this approach, the recognition of two geometric shapes is implemented, the sphere and the cylinder. As a result of fitting a sphere, the algorithm returns four optimized parameters: three coordinates of the sphere center point and its radius.
 	
-For the cylinder model, seven parameters are obtained, including the radius, three coordinates of its axis direction and three coordinates of a point lying on that axis. Furthermore, in order to distinguish cylindrical objects with different heights a few additional steps are required after the model is found. Firstly, the point cloud coordinate system is transformed so as to cover the cylinder axis with the Z-axis. Next, two points with minimum and maximum $z$-coordinates are found with the getMinMax3D function from PCL. Finally, the resulting height $h$ of the cylinder is given by the difference of those coordinates, that is $h = z_{max} - z_{min}$. Figure X illustrates an example point cloud with a fitted cylinder model (highlighted with red).
+For the cylinder model, seven parameters are obtained, including the radius, three coordinates of its axis direction and three coordinates of a point lying on that axis. Furthermore, in order to distinguish cylindrical objects with different heights, a few additional steps are required after the model is found. Firstly, the point cloud coordinate system is transformed so as to cover the cylinder axis with the Z-axis. Next, two points with minimum and maximum $z$-coordinates are found with the getMinMax3D function from PCL. Finally, the resulting height $h$ of the cylinder is given by the difference of those coordinates, that is $h = z_{max} - z_{min}$. Figure \ref{fig:cylinder} illustrates an example of fitting a cylinder model (highlighted with red) to a point cloud.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.5\textwidth]{fig/cylinder}
+\includegraphics[width=0.3\textwidth]{fig/cylinder}
 \caption{Cylinder model fitting example \cite{pcl}}
 \label{fig:cylinder}
 \end{figure}
@@ -102,10 +119,10 @@ The second, general method of object recognition utilises the global recognition
 
 %---------------------------------------------------------------------------
 
-\section{Autonomous control mode}
+\section{The autonomous control mode}
 \label{sec:autonomy}
 
-Procedures of obstacle detection and object recognition provide the necessary tools to achieve the stated task of autonomous finding of predefined objects. The autonomous mode was implemented in the form of a C++ application, executed on the NVIDIA Jetson TK1 platform. This application communicates with the control server via HTTP requests, as described in Section \ref{sec:soft}. For this purpose, the HTTP POST and GET methods from cpp-netlib \cite{netlib} library are utilised. All of the required communication request are encapsulated in the form of a Robot class object. The methods of this class enable the realization of such actions as driving forward, mobile platform rotation, stopping and setting the manipulator joints in given positions. 
+Procedures of obstacle detection and object recognition provide the necessary tools to achieve the stated task of autonomous finding of predefined objects. The autonomous mode was implemented in the form of a C++ application, executed on the NVIDIA Jetson TK1 platform. This application communicates with the control server via HTTP requests, as described in Section \ref{sec:soft}. For this purpose, the HTTP POST and GET methods from cpp-netlib \cite{netlib} library are utilised. All of the required communication request are encapsulated in the form of a Robot class object. The methods of this class enable the realization of such actions as driving forward, platform rotation, stopping and setting the manipulator joints in given positions. 
 
 The depth data processing procedures described in preceding sections posses a significant amount of configurable parameters. To avoid having to recompile the code with every parameter customization, all of the relevant constants are included in a configuration file in a XML format. The path to this XML file is specified as a command-line argument of the application, together with the name of  the target to search for. The configuration file contains also information on the recognition method type and the path to the training set for the specified target name.
 
@@ -145,11 +162,33 @@ At the time of entrance to each of the \textbf{F}, \textbf{T}, \textbf{S} states
 
 The implemented obstacle avoidance system was tested in a household environment, among objects of everyday usage. The robot was able to move flawlessly between obstacles, such as furniture, boxes or even people. On the other hand, some minor drawbacks of the system were noticed. Firstly, the assumption of the flat surface of the floor is not always true for such environment. Low doorsteps, for example, were treated as obstacles and limited the exploration area to only one room. Another important limitation is the fact, that the utilised depth sensor does not provide proper measurements for highly reflective or transparent surfaces. Therefore, obstacles with such properties pose a potential threat to the system operation.
 
-FIGURE TARGETS
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.5\textwidth]{fig/targetswhite}
+\caption{A point cloud with all of the target objects}
+\label{fig:targets}
+\end{figure}
 
 Three search targets were selected to test the implementation of the object recognition methods. A tennis ball and a tin can for sphere and cylinder model fitting approach and a coffee mug for general object recognition. The selected targets are presented in the Figure \ref{fig:targets}. To generate the training set for global descriptor matching, eight scans of the coffee mug were taken with manual object rotation by an angle increment of \SI{45}{\degree}. Those snapshots were then processed to extract the object points and calculate the VFH descriptors. One of such partial object scans, with its VFH histogram is shown in the Figure \ref{fig:mugvfh}.
 
-FIGURE MUGVFH
+\begin{figure} [H]
+\centering
+\begin{subfigure}{.2\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{fig/mugvfh}
+  \caption{Partial target scan}
+  \label{fig:mugvfh1}
+\end{subfigure}%
+\begin{subfigure}{.7\textwidth}
+  \centering
+  \includegraphics[width=.8\linewidth]{fig/mug3vfh}
+  \caption{VFH histogram}
+  \label{fig:mugvfh2}
+\end{subfigure}
+\caption{A partial scan of the target and its VFH descriptor}
+\label{fig:mugvfh}
+\end{figure}
 
 Each of the implemented methods provided different recognition performance. The best results of the established task were obtained with the spherical model of the tennis ball, which was recognized in most of the cases. This is justified by the fact, that this model possess the smallest number of optimized parameters. The most difficult aspect of testing the object recognition implementation, which requires further improvement, was to properly set all of the thresholding parameters for the depth data processing procedures. 
 
+The RANSAC shape model fitting is governed the distance threshold between the accepted inliers and the model. This parameter is used to specify the expected inaccuracy of the acquired point cloud.  In case of the tennis ball target, the model is successfully matched with tolerance of $5mm$. The cylindrical model, on the other hand, required much higher tolerance of about $3cm$ to return positive model recognition. Unfortunately, such high tolerance resulted i.e. in cylinders fitted to furniture edges. A possible improvement of this method performance requires further tuning of parameters, such as the normal estimation radius. In case of the recognition method based on the VFH descriptor, the results were also unsatisfactory and further research has to be conducted to improve its performance. Most probably, this was caused by the fact, that the training set was generated from insufficient descriptive angles. In future, a pan-tilt device is planned to be utilised for object scanning from a large number of distinct rotations.
