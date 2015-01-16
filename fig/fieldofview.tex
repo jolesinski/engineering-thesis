@@ -115,20 +115,20 @@
 \begin{centering}
 
 \begin{tikzpicture}
-    \lineann[-1.75]{-90}{\dh}{$L_0$}
+    %\lineann[-1.75]{-90}{\dh}{$L_0$}
     \robotbase
     \angann[1cm]{\thetaone}{$\theta_1$}
-    \lineann[0.7]{\thetaone}{\Lone}{$L_1$}
+    %\lineann[0.7]{\thetaone}{\Lone}{$L_1$}
     \link(\thetaone:\Lone);
     \joint
     \begin{scope}[shift=(\thetaone:\Lone), rotate=\thetaone]
         \angann{\thetatwo}{$\theta_2$}
-        \lineann[-0.5]{\thetatwo}{\Ltwo}{$L_2$}
+        %\lineann[-0.5]{\thetatwo}{\Ltwo}{$L_2$}
         \link(\thetatwo:\Ltwo);
         \joint
         \begin{scope}[shift=(\thetatwo:\Ltwo), rotate=\thetatwo]
             \angann{\thetathree}{$\theta_3$}
-            \lineann[0.7]{\thetathree}{\Lthree}{$L_3$}
+            %\lineann[0.7]{\thetathree}{\Lthree}{$L_3$}
             \draw [dashed, red,rotate=\thetathree] (0,0) -- (1.2\ddx,0pt);
             \link(\thetathree:\Lthree);
             \joint
@@ -137,13 +137,13 @@
                 \begin{scope}[shift={(1.5mm,-\dg)}, rotate=-90]
                 
 
-				\begin{scope}[rotate=-\SensorTheta, blue,inner sep=2pt]
-     			    \draw[dashed, blue!40] (0,0) -- +(0,8.75)
-     			        node [coordinate] (a) {};
-    				    \draw[dashed, blue!40] (\SensorHeight,0) -- +(0,8.75)
-    				        node [coordinate] (b) {};
-			        \draw[|<->|] (a) -- node[fill=white] {$H$} (b);
- 			    \end{scope}                      
+%				\begin{scope}[rotate=-\SensorTheta, blue,inner sep=2pt]
+%     			    \draw[dashed, blue!40] (0,0) -- +(0,8.75)
+%     			        node [coordinate] (a) {};
+%    				    \draw[dashed, blue!40] (\SensorHeight,0) -- +(0,8.75)
+%    				        node [coordinate] (b) {};
+%			        \draw[|<->|] (a) -- node[fill=white] {$H$} (b);
+% 			    \end{scope}                      
                 
 				\pgfmathsetmacro\by{\SensorHeight/cos(\SensorTheta)}
 				\pgfmathsetmacro\ha{\SensorHeight/cos(\SensorTheta-22.5)}
@@ -159,10 +159,10 @@
                 \draw (0,0) -- (c);
                 \draw (0,0) -- (a);
                 
-                \node[above right = -0.2](b) at (\MinDepth,\MinDepth*0.4142) {$C$};
-                \node[left =-0.1](b) at (\MinDepth,-\MinDepth*0.4142) {$D$};
-                \node[right=0.95](cn) at (\cy -1,\cx -1) {$B$};
-                \node[right=0.87](an) at (\ay -1,\ax -1) {$A$};
+                %\node[above right = -0.2](b) at (\MinDepth,\MinDepth*0.4142) {$C$};
+                %\node[left =-0.1](b) at (\MinDepth,-\MinDepth*0.4142) {$D$};
+                %\node[right=0.95](cn) at (\cy -1,\cx -1) {$B$};
+                %\node[right=0.87](an) at (\ay -1,\ax -1) {$A$};
                 \fill[pattern=dots] (\MinDepth,-\MinDepth*0.4142) -- (a) -- (c) -- (\MinDepth,\MinDepth*0.4142) -- cycle;
 
 	            \end{scope}
@@ -173,6 +173,6 @@
 \end{tikzpicture}
 
 \end{centering}
-\caption{Field of view}
+\caption{RGB-D camera field of view}
 \label{fig:fov}
 \end{figure}

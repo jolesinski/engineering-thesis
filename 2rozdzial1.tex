@@ -8,17 +8,17 @@
 
 A mobile manipulation system (MMS) is a robotic system that is capable of both manipulating objects and locomotion. Typically, the system is composed of a robotic arm based on a robotic mobile platform. Such configuration enables the manipulator to operate in an unlimited workspace, thus providing great application opportunities.
 
-Typically, mobile manipulators are designed to relieve people in hostile situations. They are, for example, widely used in the field of chemical, biological, radioactive or nuclear (CBRN) defense. Explosive materials and other hazardous substances can be disposed without exposing operators to any danger. Another example is space exploration, where manipulation systems are used in planetary rovers in unmanned exploratory missions on other planets. Substitution of human operators in such expeditions significantly reduce their expenditure and risk.
+Mobile manipulators are commonly used to relieve people in hostile situations. They are, for example, widely used in the field of chemical, biological, radioactive or nuclear (CBRN) defense. Explosive materials and other hazardous substances can be disposed without exposing operators to any danger. Another example is space exploration, where manipulation systems are used in planetary rovers in unmanned exploratory missions on other planets. Substitution of human operators in such expeditions significantly reduce their expenditure and risk.
 
-Augmenting the MMS design with a certain degree of autonomy, brings the possibility for the robot to be used as a human-assistant in the household. Most of current applications in this field refer to pick up and delivery services, that have the potential to improve lives of the elderly, injured and disabled people []. Furthermore, typical service robots in human environments are dedicated to accomplish only a single task, such as vacuum cleaning, lawn mowing, pool cleaning or window washing. Their operation is achieved by adjusting existing domestic appliances with a degree of autonomy. With a multi purpose robotic system such as a mobile manipulator, it is potentially possible not to replace existing devices but to substitute the human operator. 
+Augmenting the MMS design with a certain degree of autonomy, brings the possibility for the robot to be used as a human-assistant in the household. Most of current applications in this field refer to pick up and delivery services, that have the potential to improve lives of the elderly, injured and disabled people. Furthermore, typical service robots in human environments are dedicated to accomplish only a single task, such as vacuum cleaning, lawn mowing, pool cleaning or window washing. Their operation is achieved by adjusting existing domestic appliances with a degree of autonomy. With a multi purpose robotic system such as a mobile manipulator, it is potentially possible not to replace existing devices but to substitute the human operator. 
 
-Autonomous gripping and transportation with a MMS could also be used in the industry for designing flexible factory plants and intelligent warehouses []. A manufacturing process that utilizes the MMS robots is simpler and more cost effective in adapting to the market changes. The production could be more customized by applying MMS robots in transportation, preparatory and post-processing tasks. Furthermore, even the most advanced distribution centres, such as the Amazon Kiva Systems [kiva?], require repetitive human work to manipulate goods in the unstructured environment. Therefore, the warehousing process could benefit by applying autonomous MMS robots and there are ongoing efforts in this area [amazonchallenge].
+Autonomous gripping and transportation with a MMS could also be used in the industry for designing flexible factory plants and intelligent warehouses \cite{aimm}. A manufacturing process that utilizes the MMS robots is simpler and more cost effective in adapting to the market changes. The production could be more customized by applying MMS robots in transportation, preparatory and post-processing tasks. Furthermore, even the most advanced distribution centres, such as the Amazon Kiva Systems, require repetitive human work to manipulate goods in the unstructured environment. Therefore, the warehousing process could benefit by applying autonomous MMS robots and there are ongoing efforts in this area \cite{amazonchallenge}.
 
 % www.willowgarage.com/pages/pr2/overview
 
-One of the most promising applications of MMS is the PR2 development platform from the Willow Garage company. PR2 is a human-sized robot, equipped with two 7 degree-of-freedom manipulators, omnidirectional mobile base, a processing power of two Xeon servers with 8 cores and 24GB of RAM each, and a multitude of sensors, including stereo, time-of flight and structured light cameras, LIDAR scanners, and an inertial measurement unit [prspecs]. The PR2 robot has already proven successful in such dexterous experiments as opening doors, playing pool, folding towels and serving beverages to people[prapps]. 
+One of the most promising applications of MMS is the PR2 development platform from the Willow Garage company. PR2 is a human-sized robot, equipped with two 7 degree-of-freedom manipulators, omnidirectional mobile base, a processing power of two Xeon servers with 8 cores and 24GB of RAM each, and a multitude of sensors, including stereo, time-of flight and structured light cameras, LIDAR scanners, and an inertial measurement unit \cite{prspecs}. The PR2 robot has already proven successful in such dexterous experiments as opening doors, playing pool, folding towels and serving beverages to people. 
 
-Wide functionality of a MMS robot makes its design a challenging task. In MMS robots, the unstructured environment and additional degrees of freedom complicate the control task. Furthermore, the workspace of a manipulator is often shared with people and other vehicles. Such work environment renders many potentially hazardous situations. Therefore, it requires a highly sophisticated control system, with vision based feedback. 
+Wide functionality of a MMS robot makes its design a challenging task. The unstructured working environment and additional degrees of freedom complicate the autonomous control of such system. Furthermore, the workspace of a mobile manipulator is often shared with people and other vehicles. Such environment renders many potentially hazardous situations and requires a highly sophisticated control system with vision based feedback. The idea of the project is to develop a MMS system, that will serve as a research base in these areas.
 
 %---------------------------------------------------------------------------
 
@@ -110,7 +110,7 @@ The first stage of the project was to create the mechanical construction of the 
 \begin{figure}[H]
 \centering
 \includegraphics[trim=21cm 5cm 18cm 5cm, clip=true, totalheight=0.3\textheight]{fig/model}
-\caption{Model}
+\caption{CAD model of the designed robot}
 \label{fig:model}
 \end{figure}
 
@@ -123,17 +123,17 @@ The manipulators are based on a four wheeled mobile platform. To avoid complicat
 
 \begin{tabular}{r||l}
 \hline
-Manipulator links  (smaller)    & 20x20 \\
+Manipulator links  (smaller)    & $49,59,143,98,58,164$ \\
 
 \hline
-Manipulator links  (bigger)        & \SI{58}{\degree H}, \SI{45}{\degree V}, \SI{70}{\degree D} \\
+Manipulator links  (bigger)        & $49,59,240,127,58,164$ \\
 
 \hline
-Mobile platform & VGA (640x480) \\
+Mobile platform & $460\times 400\times 270$ \\
 
 \hline
 \end{tabular}
-\caption{The MMS robot dimensions}
+\caption{The MMS robot dimensions [mm]}
 \label{tab:dimensions}
 \end{center}
 \end{table}
@@ -141,7 +141,7 @@ Mobile platform & VGA (640x480) \\
 
 The next step in the construction of the MMS robot required a selection of hardware components, such as the actuators, power supply, embedded computing units and control electronics. The Figure \ref{fig:hardware} presents a categorized diagram of the selected elements. 
 
-The MMS robot utilises two types of actuators: four DC motors for each of the mobile platform wheels and the servomechanisms for manipulator joints. The selected DC motors type is the Pololu 1444 [datasheet] with 50:1 metal gearboxes. They achieve \SI{200}{RPM} of no-load speed and \SI{12}{\kilogram \centi\metre} of stall current. Additionally, they possess 64 CPR encoders, which multiplied by the gear ratio provide a total of 3200 counts per revolution. The type of servomechanism used for each joint, is the Turnigy 1269HV [datasheet], with titanium gears and a total stall torque of \SI{21}{\kilogram\centi\metre}. Both types of actuators are driven by the Pulse Width Modulation signal (PWM). In case of the DC motors, the PWM signal is provided by a dedicated motor driver board, named Rover 5 [datasheet]. This controller provides four low-resistance FET H-bridges, together with current monitoring on each motor channel. To generate the PWM signal for servomechanisms positioning, a 16-channel PWM driver chip, the PCA9685 [datasheet] was used. This driver has an I2C interface for setting the PWM frequency and duty cycle on a selected channel with a 12-bit resolution.
+The MMS robot utilises two types of actuators: four DC motors for each of the mobile platform wheels and the servomechanisms for manipulator joints. The selected DC motors type is the Pololu 1444 \cite{pololu} with 50:1 metal gearboxes. They achieve \SI{200}{RPM} of no-load speed and \SI{12}{\kilogram \centi\metre} of stall current. Additionally, they possess 64 CPR encoders, which multiplied by the gear ratio provide a total of 3200 counts per revolution. The type of servomechanism used for each joint, is the Turnigy 1269HV \cite{turnigy}, with titanium gears and a total stall torque of \SI{21}{\kilogram\centi\metre}. Both types of actuators are driven by the Pulse Width Modulation signal (PWM). In case of the DC motors, the PWM signal is provided by a dedicated motor driver board, named Rover 5 \cite{rover5}. This controller provides four low-resistance FET H-bridges, together with current monitoring on each motor channel. To generate the PWM signal for servomechanisms positioning, a 16-channel PWM driver chip, the PCA9685 \cite{pca9685} was used. This driver has an I2C interface for setting the PWM frequency and duty cycle on a selected channel with a 12-bit resolution.
 
 \tikzset{
   basic/.style  = {draw, font=\sffamily, font=\footnotesize, rectangle,text centered, minimum size=2.2cm,minimum height=0.5cm},
@@ -211,15 +211,13 @@ TP-LINK WN722N};
 \label{fig:hardware}
 \end{figure}
 
-The main computing unit, used for hosting the control server and directly interfacing with the actuator drivers, is the model B of Raspberry Pi development platform [datasheet]. This board is equipped with 700Mhz ARM11 family CPU, 512 MB of RAM and a set of GPIO ports with hardware UART, I2C and SPI interfaces. The MMS robot utilises an additional processing unit, with a much larger computing power for the vision system implementation. The NVIDIA Jetson TK1 [datasheet] development board is based on the Tegra K1 System-on-Chip, that includes a quad-core 2.3 GHz ARM Cortex-A15 CPU, 2 GB of RAM, and a NVIDIA Kepler GPU with 192 CUDA cores, capable of performing over 300 GFLOPS of 32-bit floating point computations. This board provides a similar performance to a modern desktop GPU, while maintaining relatively low power consumption, which makes it a perfect match for image processing applications in mobile systems, such as the MMS robot. \textbf{Network setup.}
+The main computing unit, used for hosting the control server and directly interfacing with the actuator drivers, is the model B of Raspberry Pi development platform \cite{wikipedia}. This board is equipped with 700Mhz ARM11 family CPU, 512 MB of RAM and a set of GPIO ports with hardware UART, I2C and SPI interfaces. The MMS robot utilises an additional processing unit, with a much larger computing power for the vision system implementation. The NVIDIA Jetson TK1 \cite{nvidia} development board is based on the Tegra K1 System-on-Chip, that includes a quad-core 2.3 GHz ARM Cortex-A15 CPU, 2 GB of RAM, and a NVIDIA Kepler GPU with 192 CUDA cores, capable of performing over 300 GFLOPS of 32-bit floating point computations. This board provides a similar performance to a modern desktop GPU, while maintaining relatively low power consumption, which makes it a perfect match for image processing applications in mobile systems, such as the MMS robot. \textbf{Network setup.}
 
 The whole system is powered by a lithium-polymer, 8 cell battery with a nominal voltage of \SI{29.6}{\volt} and capacity of a \SI{5.8}{\ampere\hour}. Due to the specific nature of a lithium-polymer battery, each of its cells has to be protected against excessive discharge. For this purpose, a cell voltage monitor is connected to the battery and generates a sound alarm if the voltage falls below a selected threshold. To integrate different operating voltages for the individual components, three DC-DC voltage converters are applied in the power system: one with \SI{6}{\volt} output and maximal current of \SI{20}{\ampere} for supplying all of the actuators, one with the output of \SI{12}{\volt} and \SI{4}{\ampere} max. for the NVIDIA Jetson board, and a \SI{5}{\volt} and \SI{4}{\ampere} max. for feeding the Raspberry Pi and the actuator drivers.
 
-The final construction result in the form of the whole, assembled MMS robot is  is presented in the Figure \ref{fig:assembled}.
-
 \begin{figure}[H]
 \centering
-\includegraphics[trim=15cm 18cm 28cm 10cm, clip=true, totalheight=0.3\textheight]{fig/robot}
+\includegraphics[trim=15cm 18cm 28cm 10cm, clip=true, totalheight=0.27\textheight]{fig/robot}
 \caption{The final effect of the MMS robot construction}
 \label{fig:assembled}
 \end{figure}
@@ -265,26 +263,26 @@ The final stage of the MMS robot construction, after the selection and assembly 
 \end{center}
 \end{figure}
 
-A Representational State Transfer (REST) software architecture design pattern was used during the implementation of the control server. In this approach, the HTTP methods like GET or POST, which are typically used by the web browsers, serve as the communication interface between different devices. The web service API, that conforms to the REST pattern is composed of a base uniform resource identifier (URI) followed by a path to a given resource. In case of the MMS robot, the base URI has the form of: \textit{http://ip:port/Robot/}. A list of example request supported by the implemented web service is presented in the Table \ref{tab:rest}. The control server was developed in the Python programming language, with the use of the Webiopi [??] Internet of Things framework. The Webiopi provides a convenient set of tools to share the peripherals of the Raspberry Pi development platform via the HTTP interface, compatible with the REST architecture.
+A Representational State Transfer (REST) \cite{wikipedia} software architecture design pattern was used during the implementation of the control server. In this approach, the HTTP methods like GET or POST, which are typically used by the web browsers, serve as the communication interface between different devices. The web service API, that conforms to the REST pattern is composed of a base uniform resource identifier (URI) followed by a path to a given resource. In case of the MMS robot, the base URI has the form of: \textit{http://ip-address/Robot/}. The control server was developed in the Python programming language, with the use of the Webiopi \cite{webiopi} Internet of Things framework. The Webiopi provides a convenient set of tools to share the peripherals of the Raspberry Pi development platform via the HTTP interface, compatible with the REST architecture.
 
-
-\begin{table}[H]
-
-\begin{center}
-
-\begin{tabular}{r||l}
-\hline
-Position of the manipulator \textit{id} \\
-
-\hline
-Position of the manipulator \textit{id}        & \SI{58}{\degree H}, \SI{45}{\degree V}, \SI{70}{\degree D} \\
-
-\hline
-Position of the manipulator \textit{id} & VGA (640x480) \\
-
-\hline
-\end{tabular}
-\caption{Example HTTP requests}
-\label{tab:rest}
-\end{center}
-\end{table}
+%A list of example request supported by the implemented web service is presented in the Table \ref{tab:rest}. 
+%\begin{table}[H]
+%
+%\begin{center}
+%
+%\begin{tabular}{r||l}
+%\hline
+%Set position of the smaller manipulator joint 1 to 100 & \textit{http://ip-address/Robot/Manipulator/1/Servo/1/Position/100}\\
+%
+%\hline
+%Position of the manipulator \textit{id}        & \SI{58}{\degree H}, \SI{45}{\degree V}, \SI{70}{\degree D} \\
+%
+%\hline
+%Position of the manipulator \textit{id} & VGA (640x480) \\
+%
+%\hline
+%\end{tabular}
+%\caption{Example HTTP requests}
+%\label{tab:rest}
+%\end{center}
+%\end{table}
