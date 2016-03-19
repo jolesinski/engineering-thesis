@@ -36,11 +36,15 @@
 \def\titlePL#1        {\gdef\@titlePL{#1}}
 \def\titleEN#1        {\gdef\@titleEN{#1}}
 \def\faculty#1      {\gdef\@faculty{#1}}
+\def\facultyEN#1      {\gdef\@facultyEN{#1}}
 \def\thesistype#1   {\gdef\@thesistype{#1}}
+\def\thesistypeEN#1   {\gdef\@thesistypeEN{#1}}
 \def\supervisor#1   {\gdef\@supervisor{#1}}
 \def\acknowledgements#1   {\gdef\@acknowledgements{#1}}
 \def\department#1   {\gdef\@department{#1}}
+\def\departmentEN#1   {\gdef\@departmentEN{#1}}
 \def\degreeprogramme#1 {\gdef\@degreeprogramme{#1}}
+\def\degreeprogrammeEN#1 {\gdef\@degreeprogrammeEN{#1}}
 
 
 %\bibliographystyle{abbrv}
@@ -66,14 +70,15 @@ Opiekun pracy: & {\itshape \@supervisor}\\
 \def\thesisheaders{
 \fancyfoot[LE,RO]{\small \@shortauthor\quad\textit{\@shorttitleEN}}
 }
+}
 
-\def\thesistable{
+
+\def\thesistableEN{
 \begin{tabular}{p{45mm}l}
 Author: & {\itshape \@author}\\[-1mm]
-Degree programme: & {\itshape \@degreeprogramme}\\[-1mm]
+Degree programme: & {\itshape \@degreeprogrammeEN}\\[-1mm]
 Supervisor: & {\itshape \@supervisor}\\
 \end{tabular}
-}
 }
 
 \ProcessOptions
@@ -102,10 +107,10 @@ Supervisor: & {\itshape \@supervisor}\\
 {\sffamily\Large \@thesistype}
 \vspace*{11mm}
 
-{\sffamily\Large\itshape \@titleEN}
+{\sffamily\Large\itshape \@titlePL}
 \vspace*{3mm}
 
-{\sffamily\Large\itshape \@titlePL}
+{\sffamily\Large\itshape \@titleEN}
 \vspace*{29mm}
 \end{center}
 
@@ -116,7 +121,7 @@ Supervisor: & {\itshape \@supervisor}\\
 
 \vspace*{17mm}
 
-\centerline{\small\sffamily Krak\'{o}w, 2014}
+\centerline{\small\sffamily Krak\'{o}w, 2015}
 
 \clearpage 
 \thispagestyle{empty} 
@@ -124,6 +129,45 @@ Supervisor: & {\itshape \@supervisor}\\
 {~~}\vspace{20mm}
 
 {\large\itshape O\'swiadczam, \'swiadomy(-a) odpowiedzialno\'sci karnej za po\'swiadczenie nieprawdy, \.ze \mbox{niniejsz\k{a}} prac\k{e} dyplomow\k{a} wykona\l{}em(-am) osobi\'scie i samodzielnie i nie korzysta\l{}em(-am) ze \'zr\'ode\l{} innych ni\.z wymienione w pracy.}
+
+
+\newpage \titlepage 
+
+\begin{center}
+\vspace*{1.5cm}
+
+\includegraphics[scale=0.6]{agh}
+
+\vspace*{2mm}
+
+{\sffamily{\large{\bfseries{\scshape Akademia G\'{o}rniczo-Hutnicza im. Stanis\l{}awa Staszica w Krakowie}}}
+
+\vspace*{1mm}
+
+{\small\bfseries \MakeUppercase{\@facultyEN}}}
+\vspace*{3mm}
+
+{\small{\MakeUppercase{\@departmentEN}}}
+\vspace*{12mm}
+
+{\sffamily\Large \@thesistypeEN}
+\vspace*{11mm}
+
+{\sffamily\Large\itshape \@titleEN}
+\vspace*{3mm}
+
+%{\sffamily\Large\itshape \@titlePL}
+\vspace*{32mm}
+\end{center}
+
+\noindent
+{\sffamily
+\thesistableEN
+}
+
+\vspace*{17mm}
+
+\centerline{\small\sffamily Krak\'{o}w, 2015}
 
 
 \clearpage \titlepage
@@ -135,9 +179,9 @@ Supervisor: & {\itshape \@supervisor}\\
 \end{minipage}
 \end{flushright}
 
-\clearpage
-\thispagestyle{empty}
-\vspace*{15cm} \vfill
+%\clearpage
+%\thispagestyle{empty}
+%\vspace*{15cm} \vfill
 \clearpage
 
 \setcounter{page}{5}
